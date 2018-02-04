@@ -1,8 +1,1769 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>Notebook</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Notebook</h1><a id="logo" href="/.">Notebook</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title"><a href="/2018/01/22/non-recur-pre-in-post/">二叉树的各序遍历非递归实现——O(h)空间复杂度</a></h1><div class="post-meta">2018-01-22</div><div class="post-content"><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>对于二叉树的三种遍历，用递归当然是比较的简单直接了，而递归实质上是程序利用方法栈不断替换当前栈帧来实现的。<br>因此我们也可以用自己设计的数据结构来替代方法栈，用循环来代替递归，比较简单的就是直接用栈结构来实现。<br>本文介绍的方法虽能解决问题，但是与递归一样，<strong>需要用到O(h)的空间复杂度</strong>，h为树高，之后将会介绍一种不依赖于栈的二叉树遍历方法，其空间复杂度仅为O(1)。</p></div><p class="readmore"><a href="/2018/01/22/non-recur-pre-in-post/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/2018/01/08/backtrack/">撞了南墙就回头的backtracking算法</a></h1><div class="post-meta">2018-01-08</div><div class="post-content"><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><strong>穷举</strong>是一种解决问题较为简单直接的思想，但是有时普通的穷举太耗时间和空间，我们希望找到一种<strong>“稍微”</strong>聪明的一点的穷举方法，能够在<strong>“显然不必再继续”</strong>的时候（显然已失败或已成功）返回，这时就可以用到<br>backtracking（回溯）算法。</p></div><p class="readmore"><a href="/2018/01/08/backtrack/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/2018/01/07/CAS/">初探JVM：（四）并发的基石——CAS操作</a></h1><div class="post-meta">2018-01-07</div><div class="post-content"><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><table>
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Notebook">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="Notebook">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Notebook">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/"/>
+
+
+
+
+
+  <title>Notebook</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left 
+  page-home">
+    <div class="headband"></div>
+	<a href="https://github.com/gyzag" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#FF6347; color:#FFF; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Notebook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+  <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/04/SAMTBD平台介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="gyz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/02/04/SAMTBD平台介绍/" itemprop="url">SAMTBD平台介绍</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-04T17:01:23+08:00">
+                2018-02-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>SAMTBD——轨迹大数据分析与挖掘平台，是武汉大学遥感学院秦昆老师的团队ISIP（智能空间信息处理与分析）团队（我负责打CALL）制作的一个旨在对时空数据进行管理、分析、挖掘与可视化的一体化平台，平台将在交通等领域对城市进行分析，为城市决策辅助。</p>
+<p>平台的设计和开发主要是我和师门的两个女生共同来完成的。平台已经在<a href="http://isip.whu.edu.cn/SAMTBD/" target="_blank" rel="noopener">外网</a>发布，但是目前权限还没开放，有想交流的同学可以邮件（gyz@whu.edu.cu）与我们联系。</p>
+<p><img src="/2018/02/04/SAMTBD平台介绍/1.png" alt="进入页面"></p>
+<h2 id="基本架构"><a href="#基本架构" class="headerlink" title="基本架构"></a>基本架构</h2><p>平台最重要的部分为算法部分，在架构上与普通网站类似<br>后台：SSM<br>前台：HTML + CSS + JS + Vue<br>数据库：MySQL + MongoDB<br>大数据：Hadoop + Spark(Livy)</p>
+<h2 id="功能模块"><a href="#功能模块" class="headerlink" title="功能模块"></a>功能模块</h2><h3 id="轨迹数据管理"><a href="#轨迹数据管理" class="headerlink" title="轨迹数据管理"></a>轨迹数据管理</h3><h4 id="数据下载"><a href="#数据下载" class="headerlink" title="数据下载"></a>数据下载</h4><p>通过该平台，对收集的所有轨迹数据（主要为出租车的轨迹数据）进行统一管理，平台为对原始数据进行统一的预处理（去噪等）。师门的成员可以直接从平台上下载这些数据。</p>
+<h4 id="数据统计"><a href="#数据统计" class="headerlink" title="数据统计"></a>数据统计</h4><p>平台会对所有的数据做一些统计分析，团队成员可以看到目前数据的完整性的情况，以及数据本身的一些分布规律，如以下面的一些。<br><img src="/2018/02/04/SAMTBD平台介绍/2.png" alt="轨迹统计示例"><br><img src="/2018/02/04/SAMTBD平台介绍/4.png" alt="轨迹统计示例"></p>
+<h3 id="场景应用模块"><a href="#场景应用模块" class="headerlink" title="场景应用模块"></a>场景应用模块</h3><p>主要指将团队的算法研究成果应用到城市的分析当中，将理论应用与实践。</p>
+<h4 id="城市热点提取模块"><a href="#城市热点提取模块" class="headerlink" title="城市热点提取模块"></a>城市热点提取模块</h4><p>该模块利用数据场理论，结合时空聚类等算法，对城市内的热点区域进行提取，热点区域是指在某时间段内，聚集现象明显的城市区域。<br><img src="/2018/02/04/SAMTBD平台介绍/7.png" alt="热点提取"><br><img src="/2018/02/04/SAMTBD平台介绍/6.png" alt="热点提取"></p>
+<h4 id="异常轨迹发现模块"><a href="#异常轨迹发现模块" class="headerlink" title="异常轨迹发现模块"></a>异常轨迹发现模块</h4><p>该模块主要是利用一些机器学习的方法，对城市中的一些“异常轨迹”进行发现，对一些出租车的异常模式，如“疑似宰客”现象（路程长且时间长），“疑似老司机抄近路”现象（路程短且时间短）进行识别，最后进行可视化。</p>
+<h4 id="城市拥堵分析"><a href="#城市拥堵分析" class="headerlink" title="城市拥堵分析"></a>城市拥堵分析</h4><p>利用缓速分析等方法，结合时空分析算法，对不同时段城市不同区域的拥堵情况进行计算，并可视化。<br><img src="/2018/02/04/SAMTBD平台介绍/9.gif" alt="拥堵分析"></p>
+<h3 id="算法包模块"><a href="#算法包模块" class="headerlink" title="算法包模块"></a>算法包模块</h3><p>平台将一系列的机器学习（如谱聚类和各种分类模型等）和空间分析算法发成REST风格的服务，部分可并行计算的任务也通过Livy发成Spark的REST服务，团队成员通过界面或代码直接调用即可，一起共享服务器的优越计算性能。</p>
+<h2 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h2><p>后面我们还讲对整个平台做持续的优化，包括增加功能，改bug等。例如能够把团队在遥感图像方面的研究和成果（传统方法和深度学习等）加入到整个平台当中。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/22/non-recur-pre-in-post/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="gyz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/01/22/non-recur-pre-in-post/" itemprop="url">二叉树的各序遍历非递归实现——O(h)空间复杂度</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-22T17:14:52+08:00">
+                2018-01-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据结构与算法/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>对于二叉树的三种遍历，用递归当然是比较的简单直接了，而递归实质上是程序利用方法栈不断替换当前栈帧来实现的。<br>因此我们也可以用自己设计的数据结构来替代方法栈，用循环来代替递归，比较简单的就是直接用栈结构来实现。<br>本文介绍的方法虽能解决问题，但是与递归一样，<strong>需要用到O(h)的空间复杂度</strong>，h为树高，之后将会介绍一种不依赖于栈的二叉树遍历方法，其空间复杂度仅为O(1)。</p>
+<h2 id="核心"><a href="#核心" class="headerlink" title="核心"></a>核心</h2><p>如何根据前序、中序、后序遍历的<strong>不同要求(分裂和执行的顺序等)</strong>来设计入栈和出栈的功能。本文中的二叉树结构如下所示（按leetcode的标准）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Definition for a binary tree node.</span><br><span class="line"> * public class TreeNode &#123;</span><br><span class="line"> *     int val;</span><br><span class="line"> *     TreeNode left;</span><br><span class="line"> *     TreeNode right;</span><br><span class="line"> *     TreeNode(int x) &#123; val = x; &#125;</span><br><span class="line"> * &#125;</span><br><span class="line"> */</span><br></pre></td></tr></table></figure></p>
+<h2 id="前序遍历"><a href="#前序遍历" class="headerlink" title="前序遍历"></a>前序遍历</h2><p>在前序遍历中，每个节点的执行在分裂之前进行。实现时，将栈顶节点出栈，完成执行后再并将非空的子节点放入栈中即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;Integer&gt; preorderTraversal(TreeNode root) &#123;</span><br><span class="line">    List&lt;Integer&gt; res = new ArrayList&lt;&gt;();</span><br><span class="line">    if(root == null)</span><br><span class="line">        return res;</span><br><span class="line">    Stack&lt;TreeNode&gt; stack = new Stack&lt;TreeNode&gt;();</span><br><span class="line">    stack.push(root);</span><br><span class="line">    while(!stack.isEmpty())&#123;</span><br><span class="line">        // 直接出栈即可</span><br><span class="line">        TreeNode node = stack.pop();</span><br><span class="line">        res.add(node.val);</span><br><span class="line">        // 注意顺序，先右后左</span><br><span class="line">        if(node.right != null)</span><br><span class="line">            stack.push(node.right);</span><br><span class="line">        if(node.left != null)</span><br><span class="line">            stack.push(node.left);</span><br><span class="line">    &#125;</span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="中序遍历"><a href="#中序遍历" class="headerlink" title="中序遍历"></a>中序遍历</h2><p>中序遍历比前序遍历要复杂一些，因为中序遍历中，节点的执行发生在左子节点分裂和右子节点分裂中间。<br>解决方案是，在<strong>栈中仍然仅存放非空节点，并增加一个节点引用来辅助解决问题</strong>。（从左神的书学习。。）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;Integer&gt; inorderTraversal(TreeNode root) &#123;</span><br><span class="line">    List&lt;Integer&gt; res = new ArrayList&lt;&gt;();</span><br><span class="line">    if(root == null)</span><br><span class="line">        return res;</span><br><span class="line">    Stack&lt;TreeNode&gt; stack = new Stack&lt;&gt;();</span><br><span class="line">    TreeNode curNode = root;</span><br><span class="line">    // 必须两个条件同时满足才停止循环</span><br><span class="line">    while(!stack.isEmpty() || curNode != null)&#123;</span><br><span class="line">        if(curNode != null)&#123;</span><br><span class="line">            stack.push(curNode); </span><br><span class="line">            curNode = curNode.left;</span><br><span class="line">        &#125;</span><br><span class="line">        else&#123;</span><br><span class="line">            TreeNode node = stack.pop();</span><br><span class="line">            res.add(node.val);</span><br><span class="line">            curNode = node.right;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="后序遍历"><a href="#后序遍历" class="headerlink" title="后序遍历"></a>后序遍历</h2><p>后序遍历中，节点的执行发生在左子节点分裂和右子节点分裂之后，因此可以将分裂和执行这两个过程分离开来，用<strong>两个栈</strong>来实现，所有的执行工作在第二个栈中进行。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;Integer&gt; postorderTraversal(TreeNode root) &#123;</span><br><span class="line">    List&lt;Integer&gt; res = new ArrayList&lt;&gt;();</span><br><span class="line">    if(root == null)</span><br><span class="line">        return res;</span><br><span class="line">    Stack&lt;TreeNode&gt; s1 = new Stack&lt;&gt;();</span><br><span class="line">    Stack&lt;TreeNode&gt; s2 = new Stack&lt;&gt;();</span><br><span class="line">    s1.push(root);</span><br><span class="line">    while(!s1.isEmpty())&#123;</span><br><span class="line">        TreeNode node = s1.pop();</span><br><span class="line">        // 注意顺序，先左后右</span><br><span class="line">        if(node.left != null)</span><br><span class="line">            s1.push(node.left);</span><br><span class="line">        if(node.right != null)</span><br><span class="line">            s1.push(node.right);</span><br><span class="line">        s2.push(node);</span><br><span class="line">    &#125;</span><br><span class="line">    while(!s2.isEmpty())</span><br><span class="line">        res.add(s2.pop().val);</span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/08/backtrack/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="gyz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/01/08/backtrack/" itemprop="url">撞了南墙就回头的backtracking算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-08T22:44:54+08:00">
+                2018-01-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据结构与算法/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><strong>穷举</strong>是一种解决问题较为简单直接的思想，但是有时普通的穷举太耗时间和空间，我们希望找到一种<strong>“稍微”</strong>聪明的一点的穷举方法，能够在<strong>“显然不必再继续”</strong>的时候（显然已失败或已成功）返回，这时就可以用到<br>backtracking（回溯）算法。</p>
+<p>backtraking的优点在于<strong>对盲目的穷举进行了优化</strong>，同时保持了简单性；缺点在于它<strong>仍是在穷举的大思维下运作的</strong>，和一些更为精巧的算法相比，运算开销仍然较大。</p>
+<h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>在leetcode的讨论区<a href="https://discuss.leetcode.com/user/lhearen" target="_blank" rel="noopener">有人</a>对该方法的一般解决方案进行了概括：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Pick a starting point.</span><br><span class="line">while(Problem is not solved)</span><br><span class="line">    For each path from the starting point.</span><br><span class="line">        check if selected path is safe, if yes select it</span><br><span class="line">        and make recursive call to rest of the problem</span><br><span class="line">        before which undo the current move.</span><br><span class="line">    End For</span><br><span class="line">If none of the move works out, return false, NO SOLUTON.</span><br></pre></td></tr></table></figure></p>
+<p>个人认为，算法的核心在于，<strong>如何通过“合理”选择下一步以及退回上一步来完成逻辑。</strong></p>
+<h2 id="基础实践"><a href="#基础实践" class="headerlink" title="基础实践"></a>基础实践</h2><h3 id="全排列问题"><a href="#全排列问题" class="headerlink" title="全排列问题"></a>全排列问题</h3><p>题目内容（leetcode 46）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Given a collection of distinct numbers, return all possible permutations.</span><br><span class="line"></span><br><span class="line">For example,</span><br><span class="line">[1,2,3] have the following permutations:</span><br><span class="line">[</span><br><span class="line">  [1,2,3],</span><br><span class="line">  [1,3,2],</span><br><span class="line">  [2,1,3],</span><br><span class="line">  [2,3,1],</span><br><span class="line">  [3,1,2],</span><br><span class="line">  [3,2,1]</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>解题核心：<strong>简单穷举所有情况，当长度满足要求时返回</strong>。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;List&lt;Integer&gt;&gt; permute(int[] nums) &#123;</span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; res = new ArrayList&lt;List&lt;Integer&gt;&gt;();</span><br><span class="line">    if(nums == null || nums.length == 0)</span><br><span class="line">        return res;</span><br><span class="line">    backTracking(nums, new ArrayList&lt;Integer&gt;(), res);</span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void backTracking(int[] a, List&lt;Integer&gt; curList, List&lt;List&lt;Integer&gt;&gt; res)&#123;</span><br><span class="line">    if(curList.size() == a.length)&#123;</span><br><span class="line">        res.add(new ArrayList&lt;&gt;(curList));</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    //每次需要从头遍历</span><br><span class="line">    for(int i = 0; i &lt; a.length; i ++)&#123;</span><br><span class="line">        if(!curList.contains(a[i]))&#123;</span><br><span class="line">            curList.add(a[i]);</span><br><span class="line">            backTracking(a, curList, res);</span><br><span class="line">            curList.remove(curList.size() - 1);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="组合问题"><a href="#组合问题" class="headerlink" title="组合问题"></a>组合问题</h3><p>题目内容（leetcode 39）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Given a set of candidate numbers (C) (without duplicates) and a target number (T), </span><br><span class="line">find all unique combinations in C where the candidate numbers sums to T.</span><br><span class="line"></span><br><span class="line">The same repeated number may be chosen from C unlimited number of times.</span><br><span class="line"></span><br><span class="line">Note:</span><br><span class="line">All numbers (including target) will be positive integers.</span><br><span class="line">The solution set must not contain duplicate combinations.</span><br><span class="line"></span><br><span class="line">For example, given candidate set [2, 3, 6, 7] and target 7, </span><br><span class="line">A solution set is: </span><br><span class="line">[</span><br><span class="line">  [7],</span><br><span class="line">  [2, 2, 3]</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>解题核心：<strong>当前组合的结果已经大于预期时，不再往前</strong>。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;List&lt;Integer&gt;&gt; combinationSum(int[] candidates, int target) &#123;</span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; res = new ArrayList&lt;List&lt;Integer&gt;&gt;();</span><br><span class="line">    if(candidates == null || candidates.length == 0)</span><br><span class="line">        return res;</span><br><span class="line">    backTracking(0, target, candidates, new ArrayList&lt;Integer&gt;(), res);</span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void backTracking(int curIndex, int curRemains, int[] a, List&lt;Integer&gt; curList, List&lt;List&lt;Integer&gt;&gt; res)&#123;</span><br><span class="line">    if(curRemains &lt; 0)</span><br><span class="line">        return;</span><br><span class="line">    if(curRemains == 0)&#123;</span><br><span class="line">        res.add(new ArrayList&lt;&gt;(curList));</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    for(int i = curIndex; i &lt; a.length; i++)&#123;</span><br><span class="line">        curList.add(a[i]);</span><br><span class="line">        backTracking(i, curRemains - a[i], a, curList, res);</span><br><span class="line">        curList.remove(curList.size() - 1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="扩展运用"><a href="#扩展运用" class="headerlink" title="扩展运用"></a>扩展运用</h2><h3 id="考虑重复的情况"><a href="#考虑重复的情况" class="headerlink" title="考虑重复的情况"></a>考虑重复的情况</h3><p>题目内容（leetcode 40）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Given a collection of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.</span><br><span class="line"></span><br><span class="line">Each number in C may only be used once in the combination.</span><br><span class="line"></span><br><span class="line">Note:</span><br><span class="line">All numbers (including target) will be positive integers.</span><br><span class="line">The solution set must not contain duplicate combinations.</span><br><span class="line">For example, given candidate set [10, 1, 2, 7, 6, 1, 5] and target 8, </span><br><span class="line">A solution set is: </span><br><span class="line">[</span><br><span class="line">  [1, 7],</span><br><span class="line">  [1, 2, 5],</span><br><span class="line">  [2, 6],</span><br><span class="line">  [1, 1, 6]</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>核心：<strong>仅过滤在同一级中出现的重复情况（由循环产生，而不是递归）</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;List&lt;Integer&gt;&gt; combinationSum2(int[] candidates, int target) &#123;</span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; res = new ArrayList&lt;List&lt;Integer&gt;&gt;();</span><br><span class="line">    if(candidates == null || candidates.length == 0)</span><br><span class="line">        return res;</span><br><span class="line">    // 需要排序</span><br><span class="line">    Arrays.sort(candidates);</span><br><span class="line">    backTracking(-1, target, candidates, new ArrayList&lt;Integer&gt;(), res);</span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line">public void backTracking(int curIndex, int curRemains, int[] a, List&lt;Integer&gt; curList, List&lt;List&lt;Integer&gt;&gt; res)&#123;</span><br><span class="line">    if(curRemains &lt; 0)</span><br><span class="line">        return;</span><br><span class="line">    if(curRemains == 0)&#123;</span><br><span class="line">        res.add(new ArrayList&lt;&gt;(curList));</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    for(int i = curIndex + 1; i &lt; a.length; i++)&#123;</span><br><span class="line">        // 仅对同一级的重复进行过滤</span><br><span class="line">        if(i &gt; curIndex + 1 &amp;&amp; a[i] == a[i - 1])</span><br><span class="line">            continue;</span><br><span class="line">        curList.add(a[i]);</span><br><span class="line">        backTracking(i, curRemains - a[i], a, curList, res);</span><br><span class="line">        curList.remove(curList.size() - 1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="可提前退出的问题"><a href="#可提前退出的问题" class="headerlink" title="可提前退出的问题"></a>可提前退出的问题</h3><p>题目内容（改编自leetcode 39）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Given a set of candidate numbers (C) (without duplicates) and a target number (T), </span><br><span class="line"></span><br><span class="line">judge if there has combination in C where the candidate numbers sums to T.</span><br><span class="line"></span><br><span class="line">The same repeated number may be chosen from C unlimited number of times.</span><br></pre></td></tr></table></figure></p>
+<p>核心：<strong>当已经找到答案时，提前结束搜索。</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public boolean combinationSum(int[] candidates, int target)&#123;</span><br><span class="line">    if (candidates == null || candidates.length == 0)</span><br><span class="line">        return res;</span><br><span class="line">    backTracking(0, target, candidates, new ArrayList&lt;Integer&gt;());</span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void backTracking(int curIndex, int curRemains, int[] a,List&lt;Integer&gt; curList)&#123;</span><br><span class="line">    if (curRemains &lt; 0)</span><br><span class="line">        return;</span><br><span class="line">    if (curRemains == 0)&#123;</span><br><span class="line">        res = true;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    for (int i = curIndex; i &lt; a.length; i++)&#123;</span><br><span class="line">        curList.add(a[i]);</span><br><span class="line">        backTracking(i, curRemains - a[i], a, curList);</span><br><span class="line">        curList.remove(curList.size() - 1);</span><br><span class="line">        // 当已经找到答案时，直接返回</span><br><span class="line">        if (res)</span><br><span class="line">            return;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="经典应用"><a href="#经典应用" class="headerlink" title="经典应用"></a>经典应用</h2><h3 id="N皇后问题（leetcode-51）"><a href="#N皇后问题（leetcode-51）" class="headerlink" title="N皇后问题（leetcode 51）"></a>N皇后问题（leetcode 51）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">The n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other.</span><br><span class="line"></span><br><span class="line">Given an integer n, return all distinct solutions to the n-queens puzzle.</span><br><span class="line"></span><br><span class="line">Each solution contains a distinct board configuration of the n-queens&apos; placement, where &apos;Q&apos; and &apos;.&apos; both indicate a queen and an empty space respectively.</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/01/08/backtrack/8-queens.png" alt="8-queens"><br>核心：<strong>经典的回溯，注意如何简洁的进行检查</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;List&lt;String&gt;&gt; solveNQueens(int n) &#123;</span><br><span class="line">    List&lt;List&lt;String&gt;&gt; res = new ArrayList&lt;List&lt;String&gt;&gt;();</span><br><span class="line">    if(n &lt;= 0)</span><br><span class="line">        return res;</span><br><span class="line">    backTracking(n, 0, new ArrayList&lt;Integer&gt;(), new ArrayList&lt;String&gt;(), res);</span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void backTracking(int n, int col, List&lt;Integer&gt; curRows, List&lt;String&gt; curRes, List&lt;List&lt;String&gt;&gt; res)&#123;</span><br><span class="line">    if(col == n)&#123;</span><br><span class="line">        res.add(new ArrayList&lt;&gt;(curRes));</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    for(int i = 0; i &lt; n; i++)&#123;</span><br><span class="line">        if(!check(col, i, curRows))</span><br><span class="line">            continue;</span><br><span class="line">        // 这里我单独保存一个列信息list以便更快的检查</span><br><span class="line">        curRows.add(i);</span><br><span class="line">        addStr(n, i, curRes);</span><br><span class="line">        backTracking(n, col + 1, curRows, curRes, res);</span><br><span class="line">        curRes.remove(curRes.size() -1);</span><br><span class="line">        curRows.remove(curRows.size() -1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 根据题目要求补全每行的内容</span><br><span class="line">public void addStr(int n, int row, List&lt;String&gt; res)&#123;</span><br><span class="line">    StringBuilder sb = new StringBuilder();</span><br><span class="line">    for(int i = 0; i &lt; n; i++)&#123;</span><br><span class="line">        if(i == row)&#123;</span><br><span class="line">            sb.append(&quot;Q&quot;);</span><br><span class="line">            continue;</span><br><span class="line">        &#125;</span><br><span class="line">        sb.append(&quot;.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    res.add(sb.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 检查时仅需当前每步的列信息即可</span><br><span class="line">public boolean check(int col, int row, List&lt;Integer&gt; rows)&#123;</span><br><span class="line">    for(int i = 0; i &lt; rows.size(); i++)&#123;</span><br><span class="line">        // 后面两步对两种对角线关系进行判断</span><br><span class="line">        if(row == rows.get(i) || col -row == i - rows.get(i) || col + row == i + rows.get(i))&#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/07/CAS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="gyz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/01/07/CAS/" itemprop="url">初探JVM：（四）并发的基石——CAS操作</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-07T18:11:33+08:00">
+                2018-01-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><table>
 <thead>
 <tr>
 <th>Field</th>
-<th style="text-align:center">Type</th></div><p class="readmore"><a href="/2018/01/07/CAS/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/2018/01/06/call-by-ref/">初探JVM：（三）关于引用传递的文字游戏——从一道题目想到</a></h1><div class="post-meta">2018-01-06</div><div class="post-content"><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>做某客的Java题时遇到一道题目，一时间有点懵逼，毕竟值传递啊引用传递啊这种有点类似文字游戏的概念被用来出题真的好么，特别是在Java语言下。<br><br><br><img src="/2018/01/06/call-by-ref/1.png" alt="题目"><br>答案是A、C、D，也是有点懵，毕竟就传统意义来讲，Java应该只有值传递，没有引用传递吧。</p></div><p class="readmore"><a href="/2018/01/06/call-by-ref/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/2017/12/31/stack-allocation/">初探JVM：（二）从逃逸分析到栈上分配</a></h1><div class="post-meta">2017-12-31</div><div class="post-content"><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>传统概念中Java的对象均保存在堆中，被所有线程共享，由垃圾回收机制对其进行回收。这样做的优点在于可以对所有对象进行统一而清晰的管理，缺点在于增加了垃圾回收器的压力。由于大量的对象均只存在于某一方法或某一线程中，因为如果将它们和本地基本变量一样随着栈帧出栈而销毁，垃圾回收器就可以省心不少。</p></div><p class="readmore"><a href="/2017/12/31/stack-allocation/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/2017/12/20/CDH集群运维——安装Kafka/">CDH集群运维——安装Kafka</a></h1><div class="post-meta">2017-12-20</div><div class="post-content"><p>做流计算，Kafka是非常重要的，</p>
+<th style="text-align:center">Type</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CAR_ID</td>
+<td style="text-align:center">string</td>
+<td style="text-align:right">taxi id</td>
+</tr>
+<tr>
+<td>TIME_STAMP</td>
+<td style="text-align:center">string</td>
+<td style="text-align:right">time stamp</td>
+</tr>
+<tr>
+<td>LONGITUDE</td>
+<td style="text-align:center">float</td>
+<td style="text-align:right">car longitude</td>
+</tr>
+<tr>
+<td>LATITUDE</td>
+<td style="text-align:center">float</td>
+<td style="text-align:right">car latitude</td>
+</tr>
+<tr>
+<td>DIRECTION</td>
+<td style="text-align:center">int</td>
+<td style="text-align:right">car direction</td>
+</tr>
+<tr>
+<td>SPEED</td>
+<td style="text-align:center">int</td>
+<td style="text-align:right">car speed</td>
+</tr>
+<tr>
+<td>PASSENGER_STATUS</td>
+<td style="text-align:center">string</td>
+<td style="text-align:right">Carrying passenger or not</td>
+</tr>
+</tbody>
+</table>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/06/call-by-ref/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="gyz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/01/06/call-by-ref/" itemprop="url">初探JVM：（三）关于引用传递的文字游戏——从一道题目想到</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-06T16:05:21+08:00">
+                2018-01-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>做某客的Java题时遇到一道题目，一时间有点懵逼，毕竟值传递啊引用传递啊这种有点类似文字游戏的概念被用来出题真的好么，特别是在Java语言下。<br><br><br><img src="/2018/01/06/call-by-ref/1.png" alt="题目"><br>答案是A、C、D，也是有点懵，毕竟就传统意义来讲，Java应该只有值传递，没有引用传递吧。</p>
+<h2 id="Java有没有引用传递？"><a href="#Java有没有引用传递？" class="headerlink" title="Java有没有引用传递？"></a>Java有没有引用传递？</h2><p>个人感觉这种就是文字游戏了，当然就大多数定义来讲，以及与其他语言比较的话（C++， C#），<strong>Java的确是没有引用传递，只有值传递的。</strong></p>
+<p><strong>一般来说，值传递是指在调用函数时，传递的参数是实参值的一份拷贝,引用传递则是指在调用函数时，传递的参数是实参的真实地址</strong></p>
+<p>相信写过C#就对这两个的区别很清晰了，在C#中用ref、out关键词可以使用引用传递，这也可以看作对C++的一种继承。而在Java中，即使参数是对象类型数据，在调用时，也仅仅是传递了引用（reference）的拷贝而已。这也是为什么在以下代码中，str的值无法改变，而在C#中则可以。</p>
+<p>Java:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public static void foo(String str)&#123;</span><br><span class="line">    str = &quot;new_value&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    String str = &quot;old_value&quot;;</span><br><span class="line">    foo(str);</span><br><span class="line">    System.out.println(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>C#:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">static void Foo(ref String str)&#123;</span><br><span class="line">    str = &quot;new_value&quot;;</span><br><span class="line">&#125;</span><br><span class="line">static void Main(String[] args)&#123;</span><br><span class="line">    String str = &quot;old_value&quot;;</span><br><span class="line">    foo(ref str);</span><br><span class="line">    Console.Write(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="如果非得说Java有引用传递呢？"><a href="#如果非得说Java有引用传递呢？" class="headerlink" title="如果非得说Java有引用传递呢？"></a>如果非得说Java有引用传递呢？</h2><p>如果非得说Java有引用传递，那么只能按值的类型来划分了，<strong>把基本类型参数的传递看作是值传递，把引用类型（对象）参数类型的传递看作是引用传递了</strong>，这样的话，这道题目的解的确是A、C、D。</p>
+<h2 id="这世上只有值传递？"><a href="#这世上只有值传递？" class="headerlink" title="这世上只有值传递？"></a>这世上只有值传递？</h2><p>如果硬把所有传递的是”值“的传递就作为”值传递“，那么在C#和C++中所谓的”引用传递“也不过是把真实的引用地址这个”值“传过去了，要这么咬文嚼字的话，那世上也就没有”引用传递“了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>不管是中文还是英文，一个单词的概念也不是一成不变的，有时候还是得分场景来说，纠结于Java有没有引用传递，很多时候有点像一个文字游戏。当然，<strong>这个游戏在大部分情况是有答案的——那就是在Java中，没有引用传递，只有值传递。</strong></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/31/stack-allocation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="gyz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/12/31/stack-allocation/" itemprop="url">初探JVM：（二）从逃逸分析到栈上分配</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-31T14:55:49+08:00">
+                2017-12-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>传统概念中Java的对象均保存在堆中，被所有线程共享，由垃圾回收机制对其进行回收。这样做的优点在于可以对所有对象进行统一而清晰的管理，缺点在于增加了垃圾回收器的压力。由于大量的对象均只存在于某一方法或某一线程中，因为如果将它们和本地基本变量一样随着栈帧出栈而销毁，垃圾回收器就可以省心不少。</p>
+<h2 id="逃逸分析"><a href="#逃逸分析" class="headerlink" title="逃逸分析"></a>逃逸分析</h2><p>书接上文，如果能确定对象仅存在于某方法或某线程中，就可以进行优化，所以关键的一步在于判断某对象是否在声明该方法的方法或线程之外被调用了，当项目很大时，这一步还是要花很多的时间。逃逸分析对对象的动态作用域进行分析，包括方法逃逸和线程逃逸，它们的区别见名即知义。</p>
+<h2 id="栈上分配"><a href="#栈上分配" class="headerlink" title="栈上分配"></a>栈上分配</h2><p>栈帧上存储的原始类型变量（包括基本类型变量以及引用）都会随着栈帧的出栈操作而自动销毁，无需垃圾回收机制对它们进行回收，因此如果逃逸分析能够确定对象不会发生逃逸，则可以在栈上分配内存。</p>
+<h2 id="标量替换"><a href="#标量替换" class="headerlink" title="标量替换"></a>标量替换</h2><p>直接的栈上分配看起来很美，但是实现起来还是非常难的，因此Java目前采用标量替换的方式来实现栈上分配。既然在栈帧上分配和销毁原始类型变量是容易的，所以可以将对象分解成原始类型变量存储，以它们的组合来表征该对象。</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p>根据实验需求编写了以下内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">public class Foo&#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws InterruptedException&#123;</span><br><span class="line">        int sumSize = 0;</span><br><span class="line">        // 捕获热点</span><br><span class="line">        // 此循环通过回边计数触发OSR（栈上替换）</span><br><span class="line">        for(int i = 0; i &lt; 1000000;i++)</span><br><span class="line">            sumSize += getSize(i);</span><br><span class="line">        Thread.sleep(2000000);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static int getSize(int i)&#123;</span><br><span class="line">        // 逃逸分析后</span><br><span class="line">        // bar对象在栈上分配（标量替换）</span><br><span class="line">        // 不会保存在堆中</span><br><span class="line">        Bar bar = new Bar(i);</span><br><span class="line">        return bar.getSize();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Bar&#123;</span><br><span class="line">    private int size;</span><br><span class="line"></span><br><span class="line">    public Bar(int name)&#123;</span><br><span class="line">        this.size = size;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getSize()&#123;</span><br><span class="line">        return size;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译Foo和Bar</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javac -encoding utf-8 Foo.java</span><br></pre></td></tr></table></figure>
+<p>由于java8默认开启逃逸分析，因此我们首先将其关闭</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xmx3G -Xmn1G -server -XX:-DoEscapeAnalysis Foo</span><br></pre></td></tr></table></figure>
+<p>根据jps获取ID</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">jps</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">18024 Foo</span><br><span class="line">4792</span><br><span class="line">5916 Jps</span><br></pre></td></tr></table></figure>
+<p>通过jmap获取内存使用情况，可以看到关闭逃逸分析的情况下，内存被全部分配到堆中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">jmap -histo 18024</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> num     #instances         #bytes  class name</span><br><span class="line">----------------------------------------------</span><br><span class="line">   1:           458       30470408  [I</span><br><span class="line">   2:       1000000       16000000  Bar</span><br><span class="line">   3:           117         976496  [B</span><br><span class="line">   4:          3475         598568  [C</span><br><span class="line">   5:          2466          59184  java.lang.String</span><br><span class="line">   6:           509          57984  java.lang.Class</span><br></pre></td></tr></table></figure>
+<p>我们开启逃逸分析后再次进行试验，bar在堆中分配的内存数量仅为原来的1/10。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">java -Xmx3G -Xmn1G -server Foo</span><br><span class="line">jps</span><br><span class="line">jmap -histo 19164</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> num     #instances         #bytes  class name</span><br><span class="line">----------------------------------------------</span><br><span class="line">   1:           457       28539440  [I</span><br><span class="line">   2:        114052        1824832  Bar</span><br><span class="line">   3:           117         976496  [B</span><br><span class="line">   4:          3475         598568  [C</span><br><span class="line">   5:          2466          59184  java.lang.String</span><br><span class="line">   6:           509          57984  java.lang.Class</span><br></pre></td></tr></table></figure></p>
+<p>为了更高度的优化，我们关闭分层编译后再次进行试验，bar在堆中分配的内存数量仅为原来的1/100。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">java -Xmx3G -Xmn1G -server -XX:-TieredCompilation Foo</span><br><span class="line">jps</span><br><span class="line">jmap -histo 15164</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> num     #instances         #bytes  class name</span><br><span class="line">----------------------------------------------</span><br><span class="line">   1:           456       14096760  [I</span><br><span class="line">   2:           117         976496  [B</span><br><span class="line">   3:          3484         599000  [C</span><br><span class="line">   4:         10072         161152  Bar</span><br><span class="line">   5:          2475          59400  java.lang.String</span><br><span class="line">   6:           509          57984  java.lang.Class</span><br></pre></td></tr></table></figure>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>从实验的角度看，从逃逸分析到栈上分配再到标量替换的过程的确节约了大量的时间和空间，但是在现实场景中，项目代码庞大，且相互依赖，逃逸分析带来的收益不一定大于其本身的消耗，至少在当前的技术背景下，它并不是绝对一劳永逸的做法。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/20/CDH集群运维——安装Kafka/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="gyz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/12/20/CDH集群运维——安装Kafka/" itemprop="url">CDH集群运维——安装Kafka</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-20T14:25:14+08:00">
+                2017-12-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ClouderaManager/" itemprop="url" rel="index">
+                    <span itemprop="name">CDH运维</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>做流计算，Kafka是非常重要的，</p>
 <p>负责在师门的CDH实验集群上安装Kafka。CDH本身的parcel是不带Kafka的，需要自己下载parcel，配置后Cloudera Manager中可以直接安装，总体上还是比较方便的。</p>
-<p>主要的步骤为——下载csd和parcel——部署csd和parcel——在CDM中检查、分配及激活parcel——在CDM中添加Kafka服务。</p></div><p class="readmore"><a href="/2017/12/20/CDH集群运维——安装Kafka/">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/2017/12/17/interpreter-compiler/">初探JVM：（一）从OpenJDK看Javac</a></h1><div class="post-meta">2017-12-17</div><div class="post-content"><p>对于java的学习，从知其然到知其所以然，JVM的学习是非常重要的一环。在这方面，给我帮助最大的是周志明老师的神书，以及莫枢大神（RednaxelaFX）的知乎回答以及文章，What can i do，高山仰止，拾人牙慧尔。</p>
-<p>把解释器和编译器作为笔记的第一章，是觉得它们能从宏观的角度阐述一门语言的执行过程。而java在解释器和编译器技术上的历史变更，也是其版本发展迭代中的主要内容。如非特别声明，本文中的JVM指HotSpot VM。</p></div><p class="readmore"><a href="/2017/12/17/interpreter-compiler/">阅读全文</a></p></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/ClouderaManager/">CDH运维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/JVM/">JVM</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据结构与算法/">数据结构与算法</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/并发/" style="font-size: 15px;">并发</a> <a href="/tags/Kafka/" style="font-size: 15px;">Kafka</a> <a href="/tags/想想/" style="font-size: 15px;">想想</a> <a href="/tags/JIT优化/" style="font-size: 15px;">JIT优化</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/non-recur-pre-in-post/">二叉树的各序遍历非递归实现——O(h)空间复杂度</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/08/backtrack/">撞了南墙就回头的backtracking算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/07/CAS/">初探JVM：（四）并发的基石——CAS操作</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/06/call-by-ref/">初探JVM：（三）关于引用传递的文字游戏——从一道题目想到</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/31/stack-allocation/">初探JVM：（二）从逃逸分析到栈上分配</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/20/CDH集群运维——安装Kafka/">CDH集群运维——安装Kafka</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/17/interpreter-compiler/">初探JVM：（一）从OpenJDK看Javac</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://fjhe.github.io/" title="不吃宵夜？" target="_blank">不吃宵夜？</a><ul></ul><a href="http://notes.grayzlp.com/" title="摸眼R闪的他" target="_blank">摸眼R闪的他</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">Notebook.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.2.5/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
+<p>主要的步骤为——下载csd和parcel——部署csd和parcel——在CDM中检查、分配及激活parcel——在CDM中添加Kafka服务。</p>
+<h3 id="下载csd和parcel"><a href="#下载csd和parcel" class="headerlink" title="下载csd和parcel"></a>下载csd和parcel</h3><p>需要根据CDH的版本来选择对应的cdh-kafka版本，对应的网址见<a href="https://www.cloudera.com/documentation/enterprise/release-notes/topics/rn_consolidated_pcm.html#pcm_kafka" target="_blank" rel="noopener">cdh-kafka版本对应</a>。由于我们的集群比较老，是CDH 5.8版本，因此需要下载的是cdh-Kafka2.0.x。<img src="/2017/12/20/CDH集群运维——安装Kafka/1.png" alt="cdh-kafka版本对应"><br>在<a href="http://archive.cloudera.com/csds/kafka/" target="_blank" rel="noopener">csd下载地址</a>中下载jar包，在<a href="http://archive.cloudera.com/kafka/parcels/" target="_blank" rel="noopener">parcel下载地址</a>中根据操作下载。parcel、parcel.sha1和mainfest这三个文件，将sha1后缀重命名为sha，并检查其与mainfest中的hashcode是否一致。<img src="/2017/12/20/CDH集群运维——安装Kafka/2.png" alt="下载parcel等文件"></p>
+<h3 id="部署csd和parcel"><a href="#部署csd和parcel" class="headerlink" title="部署csd和parcel"></a>部署csd和parcel</h3><p>然后在CDM的安装节点（不需要在其它节点）上部署这些文件，其中csd文件部署在/opt/cloudera/csd 下。<br><br><br><img src="/2017/12/20/CDH集群运维——安装Kafka/5.png" alt="csd部署"><br>将parcel等文件部署在/opt/cloudera/parcel-repo下，注意之前的mainfest要进行重命名。<br><br><br><img src="/2017/12/20/CDH集群运维——安装Kafka/6.png" alt="parcel部署"></p>
+<h3 id="检查、分配及激活parcel"><a href="#检查、分配及激活parcel" class="headerlink" title="检查、分配及激活parcel"></a>检查、分配及激活parcel</h3><p>在Cloudera Manager中点击主机——parcel——检查新parcel可以发现部署的kafka，点击分配——激活使其可用，点击详情可以看到具体的过程。<br><br><br><img src="/2017/12/20/CDH集群运维——安装Kafka/3.jpg" alt="激活parcel"><img src="/2017/12/20/CDH集群运维——安装Kafka/4.png" alt="详情"></p>
+<h3 id="添加parcel服务"><a href="#添加parcel服务" class="headerlink" title="添加parcel服务"></a>添加parcel服务</h3><p>在Cloudera Manager选择添加服务——kafka——按步骤安装，即可完成Kafka服务的安装。</p>
+<h3 id="报错及解决"><a href="#报错及解决" class="headerlink" title="报错及解决"></a>报错及解决</h3><ul>
+<li>在启动kafka服务的时候，会报错提示启动失败，报OOM错误。错误原因：broker默认的内存仅50M太小。解决方法：将broker的内存设置为1G或以上，即可开启Kafka服务。<br><br><br><img src="/2017/12/20/CDH集群运维——安装Kafka/7.png" alt="增加内存分配"><br>CDM显示服务启动成功<img src="/2017/12/20/CDH集群运维——安装Kafka/8.png" alt="Kafka启动成功">。</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/17/interpreter-compiler/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="gyz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/12/17/interpreter-compiler/" itemprop="url">初探JVM：（一）从OpenJDK看Javac</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-17T17:25:34+08:00">
+                2017-12-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>对于java的学习，从知其然到知其所以然，JVM的学习是非常重要的一环。在这方面，给我帮助最大的是周志明老师的神书，以及莫枢大神（RednaxelaFX）的知乎回答以及文章，What can i do，高山仰止，拾人牙慧尔。</p>
+<p>把解释器和编译器作为笔记的第一章，是觉得它们能从宏观的角度阐述一门语言的执行过程。而java在解释器和编译器技术上的历史变更，也是其版本发展迭代中的主要内容。如非特别声明，本文中的JVM指HotSpot VM。</p>
+<p>从宏观上讲，java的执行过程（不考虑AOT）通常可以分为从*.java到*.class（字节码）的过程和从字节码到机器码的过程。前者通常采用javac编译器进行编译，后者则采用解释执行与编译执行(C1，C2)相搭配的方式，如下图所示，由于JIT编译器的分析挺复杂，因此本文重点对javac编译器进行描述。<br><img src="/2017/12/17/interpreter-compiler/javacompile.jpg" alt="java执行过程"></p>
+<h2 id="javac编译器"><a href="#javac编译器" class="headerlink" title="javac编译器"></a>javac编译器</h2><p>严格意义上来讲，javac编译器并不属于JVM的内容，javac依赖于java语言，而JVM则仅依赖于字节码文件。通过OpenJDK，我们可以看到它的具体实现。javac编译器将java程序编译为平台及语言独立的字节码，而其他jvm族的语言也有它们的“javac”，如scalac、groovyc等。javac的主要工作包括解析填充符号表、处理注解以及分析并生成字节码，如下图所示。<br><img src="/2017/12/17/interpreter-compiler/javaccompile.jpg" alt="javac编译过程"></p>
+<h3 id="解析与填充符号表"><a href="#解析与填充符号表" class="headerlink" title="解析与填充符号表"></a>解析与填充符号表</h3><p>通过阅读OpenJDK代码，我们可以看到，解析与填充符号表的过程主要包括两部分，即parseFiles()——词法分析和语法分析以及enterTrees()——填充符号表的过程。</p>
+<p>com.sun.tools.javac.main.JavaCompiler的compile()方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">package com.sun.tools.javac.main;</span><br><span class="line"></span><br><span class="line">public void compile(List&lt;JavaFileObject&gt; sourceFileObjects,</span><br><span class="line">			List&lt;String&gt; classnames, Iterable&lt;? extends Processor&gt; processors)&#123;</span><br><span class="line">		</span><br><span class="line">		...</span><br><span class="line"></span><br><span class="line">		try</span><br><span class="line">		&#123;</span><br><span class="line">			// 初始化插入式注解处理器</span><br><span class="line">			initProcessAnnotations(processors);</span><br><span class="line"></span><br><span class="line">			// These method calls must be chained to avoid memory leaks</span><br><span class="line">			// 必须调用这些方法调用以避免内存泄漏</span><br><span class="line">			// parseFiles方法进行词法和语法分析</span><br><span class="line">			// enterTrees方法进行符号表输入</span><br><span class="line">			// processAnnotations方法执行注解处理</span><br><span class="line">			delegateCompiler = processAnnotations(</span><br><span class="line">					enterTrees(stopIfError(CompileState.PARSE,</span><br><span class="line">							parseFiles(sourceFileObjects))),</span><br><span class="line">					classnames);</span><br><span class="line"></span><br><span class="line">			// 分析并生成字节码</span><br><span class="line">			delegateCompiler.compile2();</span><br><span class="line">			delegateCompiler.close();</span><br><span class="line">			elapsed_msec = delegateCompiler.elapsed_msec;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		...</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="词法分析"><a href="#词法分析" class="headerlink" title="词法分析"></a>词法分析</h4><p>其中，parseFiles方法负责对抽象语法树（AST）进行构建，抽象语法树是编译技术中的主要内容，是之后的处理中源码原始信息的主要存在形式。词法分析将会对源码中的字符流进行扫描，并将其转化为token集合，这个过程我们可以从OpenJDK中窥见。</p>
+<p>com.sun.tools.javac.parser.JavaTokenizer：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">package com.sun.tools.javac.parser;</span><br><span class="line"></span><br><span class="line">public Token readToken() &#123;</span><br><span class="line">	...</span><br><span class="line">	try &#123;</span><br><span class="line">		//扫描</span><br><span class="line">		loop: while (true) &#123;</span><br><span class="line">			pos = reader.bp;</span><br><span class="line">			switch (reader.ch) &#123;</span><br><span class="line">			case &apos; &apos;: // (Spec 3.6)</span><br><span class="line">			case &apos;\t&apos;: // (Spec 3.6)</span><br><span class="line">			case FF: // (Spec 3.6)</span><br><span class="line">			...</span><br><span class="line">		&#125;</span><br><span class="line">		//根据扫描到的字符流确定token类型</span><br><span class="line">		switch (tk.tag) &#123;</span><br><span class="line">			case DEFAULT: return new Token(tk, pos, endPos, comments);</span><br><span class="line">			case NAMED: return new NamedToken(tk, pos, endPos, name, comments);</span><br><span class="line">			case STRING: return new StringToken(tk, pos, endPos, reader.chars(), comments);</span><br><span class="line">			case NUMERIC: return new NumericToken(tk, pos, endPos, reader.chars(), radix, comments);</span><br><span class="line">			default: throw new AssertionError();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	finally&#123;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="语法分析"><a href="#语法分析" class="headerlink" title="语法分析"></a>语法分析</h4><p>语法分析则根据生成的token集合来生成AST（com.sun.tools.javac.tree.JCTree（抽象类）），JCTree的各种实现类分别代表不同语法结构对应的节点。该过程同样可以从源码中看到。com.sun.tools.javac.parser.JavacParser会将内容保存在JCCompilationUnit类中，该类是JCTree的一个静态内部类，对JCTree进行了扩展，在抽象语法树中作为根结点存在。</p>
+<p>com.sun.tools.javac.tree.JCTree的一些扩展类（代表不同类型的节点）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">package com.sun.tools.javac.tree;</span><br><span class="line"></span><br><span class="line">public abstract class JCTree implements Tree, Cloneable, DiagnosticPosition &#123;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	//An import clause.</span><br><span class="line">	public static class JCImport extends JCTree implements ImportTree &#123;&#125;</span><br><span class="line"></span><br><span class="line">	//A class definition.</span><br><span class="line">	public static class JCClassDecl extends JCStatement implements ClassTree &#123;&#125;</span><br><span class="line"></span><br><span class="line">	//A method definition.</span><br><span class="line">	public static class JCMethodDecl extends JCTree implements MethodTree &#123;&#125;</span><br><span class="line"></span><br><span class="line">	//A variable definition.</span><br><span class="line">	public static class JCVariableDecl extends JCStatement implements VariableTree &#123;&#125;</span><br><span class="line"></span><br><span class="line">	//A statement block.</span><br><span class="line">	public static class JCBlock extends JCStatement implements BlockTree &#123;&#125;</span><br><span class="line"></span><br><span class="line">	//An Annotation</span><br><span class="line">	public static class JCAnnotation extends JCExpression implements AnnotationTree &#123;&#125;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="填充符号表"><a href="#填充符号表" class="headerlink" title="填充符号表"></a>填充符号表</h4><p>根据上一步生成的抽象语法树列表，由JavaCompiler.enterTrees()方法完成填充符号表。符号由com.sun.tools.javac.code.Symbol抽象类表示， 实现了Element接口，Element接口里有一个accept()方法用来接收访问者，所以Element接口是访问者模式中的抽象节点元素。</p>
+<h3 id="注解处理器"><a href="#注解处理器" class="headerlink" title="注解处理器"></a>注解处理器</h3><p>注解是JDK 1.5的重要改进之一，但是注解本身并不能起作用，需要一个对应的注解处理器来进行处理。Spring和Hibernate等众多成熟框架都已大量利用注解处理来实现或者简化功能。需要注意的是，如果在处理注解阶段对AST进行了修改，则编译器将回到开始重新处理；如果编译器发现有新的注解处理器要执行，则会生成一个新的JavaCompiler对象来对后续步骤进行处理。</p>
+<h3 id="语义分析"><a href="#语义分析" class="headerlink" title="语义分析"></a>语义分析</h3><p>这一步的主要内容是对格式已经检查正确的代码，进行逻辑上的检查，这种逻辑主要是依托于上下文关系来进行判断的，由于java在设计时就被定义为一种严谨的语言，其对于代码逻辑的要求也较为严格。</p>
+<h4 id="标注检查"><a href="#标注检查" class="headerlink" title="标注检查"></a>标注检查</h4><p>标注检查主要在com.sun.tools.javac.comp.Attr和com.sun.tools.javac.comp.Check中，通过作者的代码注释，我们可以看到标注检查主要包括name resolution，type checking以及constant folding（常量折叠）工作。</p>
+<p>com.sun.tools.javac.comp.Attr<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">package com.sun.tools.javac.comp;</span><br><span class="line"></span><br><span class="line">/** This is the main context-dependent analysis phase in GJC. It</span><br><span class="line"> *  encompasses name resolution, type checking and constant folding as</span><br><span class="line"> *  subtasks. Some subtasks involve auxiliary classes.</span><br><span class="line"> *  @see Check</span><br><span class="line"> *  @see Resolve</span><br><span class="line"> *  @see ConstFold</span><br><span class="line"> *  @see Infer</span><br><span class="line"> *</span><br><span class="line"> *  &lt;p&gt;&lt;b&gt;This is NOT part of any supported API.</span><br><span class="line"> *  If you write code that depends on this, you do so at your own risk.</span><br><span class="line"> *  This code and its internal interfaces are subject to change or</span><br><span class="line"> *  deletion without notice.&lt;/b&gt;</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">public class Attr extends JCTree.Visitor &#123;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="数据及控制流分析"><a href="#数据及控制流分析" class="headerlink" title="数据及控制流分析"></a>数据及控制流分析</h4><p>该操作主要在com.sun.tools.javac.comp.Flow类中，主要目的是做进一步的验证，不同的验证以内部类的形式存在于该类中，包括Liveness analysis（检查是否每个表达式都可达），Exception analysis（检查是否每个checked异常都被声明抛出或者捕获）， Definite assignment analysis（检查是否每个变量在使用前已经被赋值），Definite unassignment analysis（检查以确定有没有final变量被赋值大于一次），local variable capture analysis（检查在内部类（局部内部类和匿名内部类？）以及lambda表达式中的变量是final或者effectively-final的）。<br>这些逻辑检查以内部类的形式存在于Flow类中，如下：</p>
+<p>com.sun.tools.javac.comp.Flow<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">package com.sun.tools.javac.comp;</span><br><span class="line">public class Flow &#123;</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  static abstract class BaseAnalyzer&lt;P extends BaseAnalyzer.PendingExit&gt; extends TreeScanner &#123;</span><br><span class="line">  ...</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  class AliveAnalyzer extends BaseAnalyzer&lt;BaseAnalyzer.PendingExit&gt; &#123;</span><br><span class="line">  ...</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  class FlowAnalyzer extends BaseAnalyzer&lt;FlowAnalyzer.FlowPendingExit&gt; &#123;</span><br><span class="line">  ...</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  class LambdaFlowAnalyzer extends FlowAnalyzer &#123;</span><br><span class="line">  ...</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  class CaptureAnalyzer extends BaseAnalyzer&lt;BaseAnalyzer.PendingExit&gt; &#123;</span><br><span class="line">  ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="解糖"><a href="#解糖" class="headerlink" title="解糖"></a>解糖</h4><p>与py以及同系的scala等语言相比，java的确是一门低糖语言，解糖过程对java中为数不多的语法糖进行还原。通过jad工具，我们可以看到一些语法糖解糖后的样子。</p>
+<p>解糖前<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    //条件编译</span><br><span class="line">    if(true)&#123;</span><br><span class="line">        // 装箱</span><br><span class="line">        Integer i1 = 129;</span><br><span class="line">        Integer i2 = 130;</span><br><span class="line">        Integer i3 = 259;</span><br><span class="line">        // 泛型擦除</span><br><span class="line">        List&lt;Number&gt; l1 = new ArrayList&lt;&gt;();</span><br><span class="line">        l1.add(i1);</span><br><span class="line">        l1.get(0);</span><br><span class="line">        // 拆箱</span><br><span class="line">        System.out.println(i3 == (i2 + i1));</span><br><span class="line">        &#125;</span><br><span class="line">    else&#123;</span><br><span class="line">        System.out.println(&quot;&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//变长参数</span><br><span class="line">public void foo(String... str)</span><br><span class="line">&#123;</span><br><span class="line">    System.out.println(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>解糖后（jad）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public Foo()</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String args[])</span><br><span class="line">&#123;</span><br><span class="line">    Integer integer = Integer.valueOf(129);</span><br><span class="line">    Integer integer1 = Integer.valueOf(130);</span><br><span class="line">    Integer integer2 = Integer.valueOf(259);</span><br><span class="line">    ArrayList arraylist = new ArrayList();</span><br><span class="line">    arraylist.add(integer);</span><br><span class="line">    arraylist.get(0);</span><br><span class="line">    System.out.println(integer2.intValue() == integer1.intValue() + integer.intValue());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public transient void foo(String as[])</span><br><span class="line">&#123;</span><br><span class="line">    System.out.println(as);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="生成字节码"><a href="#生成字节码" class="headerlink" title="生成字节码"></a>生成字节码</h4><p>这一步的主要内容是对之前生成并经过检查的语法树和符号表进行最后的代码添加和转换，并输出到磁盘中，以字节码的形式存在。主要由com.sun.tools.javac.jvm.Gen以及com.sun.tools.javac.jvm来完成。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在经过以上这些步骤后，java代码就成为了语言（java，scala，groovy）和平台（win，linux）无关的字节码文件保存在磁盘上。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+  </section>
+
+  
+
+
+          </div>
+          
+
+
+          
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">gyz</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">gyz</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
