@@ -79,20 +79,20 @@
 
 
 
-<meta name="description" content="背景之前文章里介绍的是普通的二叉树非递归遍历方案，这些方案最终都需要基于栈来实现，这是因为我们只能获取到当前节点到子节点的引用，无法获取到上层节点的引用，只能通过栈把它们的信息暂时保存下来了。那么能不能不依托于栈，就能记录上层节点的信息，同时又保证可以正确回退呢？通过左神的书，学习到了这种牛x遍历方法——Morris遍">
+<meta name="description" content="背景之前文章里介绍的是普通的二叉树非递归遍历方案，这些方案最终都需要基于栈来实现，这是因为我们只能获取到当前节点到子节点的引用，无法获取到上层节点的引用，只能通过栈把它们的信息暂时保存下来了。那么能不能不依托于栈，就能记录上层节点的信息，同时又保证可以正确回溯呢？通过左神的书，学习到了这种牛x的遍历方法——Morris">
 <meta property="og:type" content="article">
 <meta property="og:title" content="二叉树的遍历非递归实现——O(1)空间复杂度">
 <meta property="og:url" content="http://yoursite.com/2018/02/06/morris-traversal/index.html">
 <meta property="og:site_name" content="Notebook">
-<meta property="og:description" content="背景之前文章里介绍的是普通的二叉树非递归遍历方案，这些方案最终都需要基于栈来实现，这是因为我们只能获取到当前节点到子节点的引用，无法获取到上层节点的引用，只能通过栈把它们的信息暂时保存下来了。那么能不能不依托于栈，就能记录上层节点的信息，同时又保证可以正确回退呢？通过左神的书，学习到了这种牛x遍历方法——Morris遍历方法。 描述Morris遍历中，让下层节点“记住”上层节点的trick就是，将">
+<meta property="og:description" content="背景之前文章里介绍的是普通的二叉树非递归遍历方案，这些方案最终都需要基于栈来实现，这是因为我们只能获取到当前节点到子节点的引用，无法获取到上层节点的引用，只能通过栈把它们的信息暂时保存下来了。那么能不能不依托于栈，就能记录上层节点的信息，同时又保证可以正确回溯呢？通过左神的书，学习到了这种牛x的遍历方法——Morris遍历方法。 描述Morris遍历中，让下层节点“记住”上层节点的trick就是，">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://yoursite.com/2018/02/06/morris-traversal/11.jpg">
 <meta property="og:image" content="http://yoursite.com/2018/02/06/morris-traversal/2.jpg">
 <meta property="og:image" content="http://yoursite.com/2018/02/06/morris-traversal/3.jpg">
-<meta property="og:updated_time" content="2018-02-16T17:34:11.047Z">
+<meta property="og:updated_time" content="2018-02-17T06:48:07.721Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="二叉树的遍历非递归实现——O(1)空间复杂度">
-<meta name="twitter:description" content="背景之前文章里介绍的是普通的二叉树非递归遍历方案，这些方案最终都需要基于栈来实现，这是因为我们只能获取到当前节点到子节点的引用，无法获取到上层节点的引用，只能通过栈把它们的信息暂时保存下来了。那么能不能不依托于栈，就能记录上层节点的信息，同时又保证可以正确回退呢？通过左神的书，学习到了这种牛x遍历方法——Morris遍历方法。 描述Morris遍历中，让下层节点“记住”上层节点的trick就是，将">
+<meta name="twitter:description" content="背景之前文章里介绍的是普通的二叉树非递归遍历方案，这些方案最终都需要基于栈来实现，这是因为我们只能获取到当前节点到子节点的引用，无法获取到上层节点的引用，只能通过栈把它们的信息暂时保存下来了。那么能不能不依托于栈，就能记录上层节点的信息，同时又保证可以正确回溯呢？通过左神的书，学习到了这种牛x的遍历方法——Morris遍历方法。 描述Morris遍历中，让下层节点“记住”上层节点的trick就是，">
 <meta name="twitter:image" content="http://yoursite.com/2018/02/06/morris-traversal/11.jpg">
 
 
@@ -346,8 +346,8 @@
       
 
       
-        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>之前文章里介绍的是普通的二叉树非递归遍历方案，这些方案最终都需要基于栈来实现，这是因为我们只能获取到当前节点到子节点的引用，<strong>无法获取到上层节点的引用</strong>，只能通过栈把它们的信息暂时保存下来了。<br>那么能不能<strong>不依托于栈，就能记录上层节点的信息，同时又保证可以正确回退</strong>呢？通过左神的书，学习到了这种牛x遍历方法——<strong>Morris遍历方法</strong>。</p>
-<h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>Morris遍历中，让下层节点“记住”上层节点的trick就是，<strong>将树中普遍存在的null节点利用起来，让它们保存指向上层节点的指针。</strong></p>
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>之前文章里介绍的是普通的二叉树非递归遍历方案，这些方案最终都需要基于栈来实现，这是因为我们只能获取到当前节点到子节点的引用，<strong>无法获取到上层节点的引用</strong>，只能通过栈把它们的信息暂时保存下来了。<br>那么能不能<strong>不依托于栈，就能记录上层节点的信息，同时又保证可以正确回溯</strong>呢？通过左神的书，学习到了这种牛x的遍历方法——<strong>Morris遍历方法</strong>。</p>
+<h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>Morris遍历中，让下层节点“记住”上层节点的trick就是，<strong>将树中普遍存在的null节点利用起来，通过它们来保存指向上层节点的指针。</strong></p>
 <p>例如在中序遍历和前序遍历中，我们可以让<strong>当前节点的左节点的最右节点的右节点（显然为null）指向当前节点</strong>，如下图所示。仅仅通过这一步，就可以让我们实现O(1)空间复杂度下的二叉树遍历了。<br><img src="/2018/02/06/morris-traversal/11.jpg" alt="图1"></p>
 <p>Morris的中序遍历和前序遍历是比较简单直观的，后序遍历则有点麻烦，本文介绍中序遍历和前序遍历。</p>
 <p>本文中的树结构如下。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class TreeNode</span><br><span class="line">&#123;</span><br><span class="line">	public int val;</span><br><span class="line">	public TreeNode left;</span><br><span class="line">	public TreeNode right;</span><br><span class="line"></span><br><span class="line">	public TreeNode(int x)&#123;</span><br><span class="line">		val = x;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -471,7 +471,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -482,7 +482,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -493,7 +493,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

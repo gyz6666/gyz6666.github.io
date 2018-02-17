@@ -250,6 +250,147 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/17/kafka实践/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="gyz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/02/17/kafka实践/" itemprop="url">kafka实践</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-17T22:35:53+08:00">
+                2018-02-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/大数据/" itemprop="url" rel="index">
+                    <span itemprop="name">大数据</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/12/solid/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -463,8 +604,8 @@
       
         
           
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>之前文章里介绍的是普通的二叉树非递归遍历方案，这些方案最终都需要基于栈来实现，这是因为我们只能获取到当前节点到子节点的引用，<strong>无法获取到上层节点的引用</strong>，只能通过栈把它们的信息暂时保存下来了。<br>那么能不能<strong>不依托于栈，就能记录上层节点的信息，同时又保证可以正确回退</strong>呢？通过左神的书，学习到了这种牛x遍历方法——<strong>Morris遍历方法</strong>。</p>
-<h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>Morris遍历中，让下层节点“记住”上层节点的trick就是，<strong>将树中普遍存在的null节点利用起来，让它们保存指向上层节点的指针。</strong></p>
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>之前文章里介绍的是普通的二叉树非递归遍历方案，这些方案最终都需要基于栈来实现，这是因为我们只能获取到当前节点到子节点的引用，<strong>无法获取到上层节点的引用</strong>，只能通过栈把它们的信息暂时保存下来了。<br>那么能不能<strong>不依托于栈，就能记录上层节点的信息，同时又保证可以正确回溯</strong>呢？通过左神的书，学习到了这种牛x的遍历方法——<strong>Morris遍历方法</strong>。</p>
+<h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>Morris遍历中，让下层节点“记住”上层节点的trick就是，<strong>将树中普遍存在的null节点利用起来，通过它们来保存指向上层节点的指针。</strong></p>
 <p>例如在中序遍历和前序遍历中，我们可以让<strong>当前节点的左节点的最右节点的右节点（显然为null）指向当前节点</strong>，如下图所示。仅仅通过这一步，就可以让我们实现O(1)空间复杂度下的二叉树遍历了。<br><img src="/2018/02/06/morris-traversal/11.jpg" alt="图1"></p>
 <p>Morris的中序遍历和前序遍历是比较简单直观的，后序遍历则有点麻烦，本文介绍中序遍历和前序遍历。</p>
 <p>本文中的树结构如下。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class TreeNode</span><br><span class="line">&#123;</span><br><span class="line">	public int val;</span><br><span class="line">	public TreeNode left;</span><br><span class="line">	public TreeNode right;</span><br><span class="line"></span><br><span class="line">	public TreeNode(int x)&#123;</span><br><span class="line">		val = x;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -1589,172 +1730,13 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/17/interpreter-compiler/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="gyz">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Notebook">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/12/17/interpreter-compiler/" itemprop="url">初探JVM：（一）从OpenJDK看Javac</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-17T17:25:34+08:00">
-                2017-12-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JVM</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>对于java的学习，从知其然到知其所以然，JVM的学习是非常重要的一环。在这方面，给我帮助最大的是周志明老师的神书，以及莫枢大神（RednaxelaFX）的知乎回答以及文章，What can i do，高山仰止，拾人牙慧尔。</p>
-<p>把解释器和编译器作为笔记的第一章，是觉得它们能从宏观的角度阐述一门语言的执行过程。而java在解释器和编译器技术上的历史变更，也是其版本发展迭代中的主要内容。如非特别声明，本文中的JVM指HotSpot VM。</p>
-<p>从宏观上讲，java的执行过程（不考虑AOT）通常可以分为从*.java到*.class（字节码）的过程和从字节码到机器码的过程。前者通常采用javac编译器进行编译，后者则采用解释执行与编译执行(C1，C2)相搭配的方式，如下图所示，由于JIT编译器的分析挺复杂，因此本文重点对javac编译器进行描述。<br><img src="/2017/12/17/interpreter-compiler/javacompile.jpg" alt="java执行过程"></p>
-<h2 id="javac编译器"><a href="#javac编译器" class="headerlink" title="javac编译器"></a>javac编译器</h2><p>严格意义上来讲，javac编译器并不属于JVM的内容，javac依赖于java语言，而JVM则仅依赖于字节码文件。通过OpenJDK，我们可以看到它的具体实现。javac编译器将java程序编译为平台及语言独立的字节码，而其他jvm族的语言也有它们的“javac”，如scalac、groovyc等。javac的主要工作包括解析填充符号表、处理注解以及分析并生成字节码，如下图所示。<br><img src="/2017/12/17/interpreter-compiler/javaccompile.jpg" alt="javac编译过程"></p>
-<h3 id="解析与填充符号表"><a href="#解析与填充符号表" class="headerlink" title="解析与填充符号表"></a>解析与填充符号表</h3><p>通过阅读OpenJDK代码，我们可以看到，解析与填充符号表的过程主要包括两部分，即parseFiles()——词法分析和语法分析以及enterTrees()——填充符号表的过程。</p>
-<p>com.sun.tools.javac.main.JavaCompiler的compile()方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">package com.sun.tools.javac.main;</span><br><span class="line"></span><br><span class="line">public void compile(List&lt;JavaFileObject&gt; sourceFileObjects,</span><br><span class="line">			List&lt;String&gt; classnames, Iterable&lt;? extends Processor&gt; processors)&#123;</span><br><span class="line">		</span><br><span class="line">		...</span><br><span class="line"></span><br><span class="line">		try</span><br><span class="line">		&#123;</span><br><span class="line">			// 初始化插入式注解处理器</span><br><span class="line">			initProcessAnnotations(processors);</span><br><span class="line"></span><br><span class="line">			// These method calls must be chained to avoid memory leaks</span><br><span class="line">			// 必须调用这些方法调用以避免内存泄漏</span><br><span class="line">			// parseFiles方法进行词法和语法分析</span><br><span class="line">			// enterTrees方法进行符号表输入</span><br><span class="line">			// processAnnotations方法执行注解处理</span><br><span class="line">			delegateCompiler = processAnnotations(</span><br><span class="line">					enterTrees(stopIfError(CompileState.PARSE,</span><br><span class="line">							parseFiles(sourceFileObjects))),</span><br><span class="line">					classnames);</span><br><span class="line"></span><br><span class="line">			// 分析并生成字节码</span><br><span class="line">			delegateCompiler.compile2();</span><br><span class="line">			delegateCompiler.close();</span><br><span class="line">			elapsed_msec = delegateCompiler.elapsed_msec;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		...</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="词法分析"><a href="#词法分析" class="headerlink" title="词法分析"></a>词法分析</h4><p>其中，parseFiles方法负责对抽象语法树（AST）进行构建，抽象语法树是编译技术中的主要内容，是之后的处理中源码原始信息的主要存在形式。词法分析将会对源码中的字符流进行扫描，并将其转化为token集合，这个过程我们可以从OpenJDK中窥见。</p>
-<p>com.sun.tools.javac.parser.JavaTokenizer：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">package com.sun.tools.javac.parser;</span><br><span class="line"></span><br><span class="line">public Token readToken() &#123;</span><br><span class="line">	...</span><br><span class="line">	try &#123;</span><br><span class="line">		//扫描</span><br><span class="line">		loop: while (true) &#123;</span><br><span class="line">			pos = reader.bp;</span><br><span class="line">			switch (reader.ch) &#123;</span><br><span class="line">			case &apos; &apos;: // (Spec 3.6)</span><br><span class="line">			case &apos;\t&apos;: // (Spec 3.6)</span><br><span class="line">			case FF: // (Spec 3.6)</span><br><span class="line">			...</span><br><span class="line">		&#125;</span><br><span class="line">		//根据扫描到的字符流确定token类型</span><br><span class="line">		switch (tk.tag) &#123;</span><br><span class="line">			case DEFAULT: return new Token(tk, pos, endPos, comments);</span><br><span class="line">			case NAMED: return new NamedToken(tk, pos, endPos, name, comments);</span><br><span class="line">			case STRING: return new StringToken(tk, pos, endPos, reader.chars(), comments);</span><br><span class="line">			case NUMERIC: return new NumericToken(tk, pos, endPos, reader.chars(), radix, comments);</span><br><span class="line">			default: throw new AssertionError();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	finally&#123;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="语法分析"><a href="#语法分析" class="headerlink" title="语法分析"></a>语法分析</h4><p>语法分析则根据生成的token集合来生成AST（com.sun.tools.javac.tree.JCTree（抽象类）），JCTree的各种实现类分别代表不同语法结构对应的节点。该过程同样可以从源码中看到。com.sun.tools.javac.parser.JavacParser会将内容保存在JCCompilationUnit类中，该类是JCTree的一个静态内部类，对JCTree进行了扩展，在抽象语法树中作为根结点存在。</p>
-<p>com.sun.tools.javac.tree.JCTree的一些扩展类（代表不同类型的节点）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">package com.sun.tools.javac.tree;</span><br><span class="line"></span><br><span class="line">public abstract class JCTree implements Tree, Cloneable, DiagnosticPosition &#123;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	//An import clause.</span><br><span class="line">	public static class JCImport extends JCTree implements ImportTree &#123;&#125;</span><br><span class="line"></span><br><span class="line">	//A class definition.</span><br><span class="line">	public static class JCClassDecl extends JCStatement implements ClassTree &#123;&#125;</span><br><span class="line"></span><br><span class="line">	//A method definition.</span><br><span class="line">	public static class JCMethodDecl extends JCTree implements MethodTree &#123;&#125;</span><br><span class="line"></span><br><span class="line">	//A variable definition.</span><br><span class="line">	public static class JCVariableDecl extends JCStatement implements VariableTree &#123;&#125;</span><br><span class="line"></span><br><span class="line">	//A statement block.</span><br><span class="line">	public static class JCBlock extends JCStatement implements BlockTree &#123;&#125;</span><br><span class="line"></span><br><span class="line">	//An Annotation</span><br><span class="line">	public static class JCAnnotation extends JCExpression implements AnnotationTree &#123;&#125;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="填充符号表"><a href="#填充符号表" class="headerlink" title="填充符号表"></a>填充符号表</h4><p>根据上一步生成的抽象语法树列表，由JavaCompiler.enterTrees()方法完成填充符号表。符号由com.sun.tools.javac.code.Symbol抽象类表示， 实现了Element接口，Element接口里有一个accept()方法用来接收访问者，所以Element接口是访问者模式中的抽象节点元素。</p>
-<h3 id="注解处理器"><a href="#注解处理器" class="headerlink" title="注解处理器"></a>注解处理器</h3><p>注解是JDK 1.5的重要改进之一，但是注解本身并不能起作用，需要一个对应的注解处理器来进行处理。Spring和Hibernate等众多成熟框架都已大量利用注解处理来实现或者简化功能。需要注意的是，如果在处理注解阶段对AST进行了修改，则编译器将回到开始重新处理；如果编译器发现有新的注解处理器要执行，则会生成一个新的JavaCompiler对象来对后续步骤进行处理。</p>
-<h3 id="语义分析"><a href="#语义分析" class="headerlink" title="语义分析"></a>语义分析</h3><p>这一步的主要内容是对格式已经检查正确的代码，进行逻辑上的检查，这种逻辑主要是依托于上下文关系来进行判断的，由于java在设计时就被定义为一种严谨的语言，其对于代码逻辑的要求也较为严格。</p>
-<h4 id="标注检查"><a href="#标注检查" class="headerlink" title="标注检查"></a>标注检查</h4><p>标注检查主要在com.sun.tools.javac.comp.Attr和com.sun.tools.javac.comp.Check中，通过作者的代码注释，我们可以看到标注检查主要包括name resolution，type checking以及constant folding（常量折叠）工作。</p>
-<p>com.sun.tools.javac.comp.Attr<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">package com.sun.tools.javac.comp;</span><br><span class="line"></span><br><span class="line">/** This is the main context-dependent analysis phase in GJC. It</span><br><span class="line"> *  encompasses name resolution, type checking and constant folding as</span><br><span class="line"> *  subtasks. Some subtasks involve auxiliary classes.</span><br><span class="line"> *  @see Check</span><br><span class="line"> *  @see Resolve</span><br><span class="line"> *  @see ConstFold</span><br><span class="line"> *  @see Infer</span><br><span class="line"> *</span><br><span class="line"> *  &lt;p&gt;&lt;b&gt;This is NOT part of any supported API.</span><br><span class="line"> *  If you write code that depends on this, you do so at your own risk.</span><br><span class="line"> *  This code and its internal interfaces are subject to change or</span><br><span class="line"> *  deletion without notice.&lt;/b&gt;</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">public class Attr extends JCTree.Visitor &#123;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="数据及控制流分析"><a href="#数据及控制流分析" class="headerlink" title="数据及控制流分析"></a>数据及控制流分析</h4><p>该操作主要在com.sun.tools.javac.comp.Flow类中，主要目的是做进一步的验证，不同的验证以内部类的形式存在于该类中，包括Liveness analysis（检查是否每个表达式都可达），Exception analysis（检查是否每个checked异常都被声明抛出或者捕获）， Definite assignment analysis（检查是否每个变量在使用前已经被赋值），Definite unassignment analysis（检查以确定有没有final变量被赋值大于一次），local variable capture analysis（检查在内部类（局部内部类和匿名内部类？）以及lambda表达式中的变量是final或者effectively-final的）。<br>这些逻辑检查以内部类的形式存在于Flow类中，如下：</p>
-<p>com.sun.tools.javac.comp.Flow<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">package com.sun.tools.javac.comp;</span><br><span class="line">public class Flow &#123;</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  static abstract class BaseAnalyzer&lt;P extends BaseAnalyzer.PendingExit&gt; extends TreeScanner &#123;</span><br><span class="line">  ...</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  class AliveAnalyzer extends BaseAnalyzer&lt;BaseAnalyzer.PendingExit&gt; &#123;</span><br><span class="line">  ...</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  class FlowAnalyzer extends BaseAnalyzer&lt;FlowAnalyzer.FlowPendingExit&gt; &#123;</span><br><span class="line">  ...</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  class LambdaFlowAnalyzer extends FlowAnalyzer &#123;</span><br><span class="line">  ...</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  class CaptureAnalyzer extends BaseAnalyzer&lt;BaseAnalyzer.PendingExit&gt; &#123;</span><br><span class="line">  ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="解糖"><a href="#解糖" class="headerlink" title="解糖"></a>解糖</h4><p>与py以及同系的scala等语言相比，java的确是一门低糖语言，解糖过程对java中为数不多的语法糖进行还原。通过jad工具，我们可以看到一些语法糖解糖后的样子。</p>
-<p>解糖前<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args)&#123;</span><br><span class="line">    //条件编译</span><br><span class="line">    if(true)&#123;</span><br><span class="line">        // 装箱</span><br><span class="line">        Integer i1 = 129;</span><br><span class="line">        Integer i2 = 130;</span><br><span class="line">        Integer i3 = 259;</span><br><span class="line">        // 泛型擦除</span><br><span class="line">        List&lt;Number&gt; l1 = new ArrayList&lt;&gt;();</span><br><span class="line">        l1.add(i1);</span><br><span class="line">        l1.get(0);</span><br><span class="line">        // 拆箱</span><br><span class="line">        System.out.println(i3 == (i2 + i1));</span><br><span class="line">        &#125;</span><br><span class="line">    else&#123;</span><br><span class="line">        System.out.println(&quot;&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//变长参数</span><br><span class="line">public void foo(String... str)</span><br><span class="line">&#123;</span><br><span class="line">    System.out.println(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>解糖后（jad）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public Foo()</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String args[])</span><br><span class="line">&#123;</span><br><span class="line">    Integer integer = Integer.valueOf(129);</span><br><span class="line">    Integer integer1 = Integer.valueOf(130);</span><br><span class="line">    Integer integer2 = Integer.valueOf(259);</span><br><span class="line">    ArrayList arraylist = new ArrayList();</span><br><span class="line">    arraylist.add(integer);</span><br><span class="line">    arraylist.get(0);</span><br><span class="line">    System.out.println(integer2.intValue() == integer1.intValue() + integer.intValue());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public transient void foo(String as[])</span><br><span class="line">&#123;</span><br><span class="line">    System.out.println(as);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="生成字节码"><a href="#生成字节码" class="headerlink" title="生成字节码"></a>生成字节码</h4><p>这一步的主要内容是对之前生成并经过检查的语法树和符号表进行最后的代码添加和转换，并输出到磁盘中，以字节码的形式存在。主要由com.sun.tools.javac.jvm.Gen以及com.sun.tools.javac.jvm来完成。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在经过以上这些步骤后，java代码就成为了语言（java，scala，groovy）和平台（win，linux）无关的字节码文件保存在磁盘上。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -1798,7 +1780,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1809,7 +1791,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1820,7 +1802,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
