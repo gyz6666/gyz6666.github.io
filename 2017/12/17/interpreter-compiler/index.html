@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="对于java的学习，从知其然到知其所以然，JVM的学习是非常重要的一环。在这方面，给我帮助最大的是周志明老师的神书，以及莫枢大神（RednaxelaFX）的知乎回答以及文章，What can i do，高山仰止，拾人牙慧尔。 把解释器和编译器作为笔记的第一章，是觉得它们能从宏观的角度阐述一门语言的执行过程。而java在">
+<meta name="description" content="对于java的学习，从知其然到知其所以然（然而现在还是菜鸟），JVM的学习是非常重要的一环。在这方面，给我帮助最大的是周志明老师的神书，以及莫枢大神（RednaxelaFX）的知乎回答以及文章，What can i do，高山仰止，拾人牙慧尔。 把解释器和编译器作为笔记的第一章，是觉得它们能从宏观的角度阐述一门语言的执">
 <meta property="og:type" content="article">
-<meta property="og:title" content="初探JVM：（一）从OpenJDK看Javac">
+<meta property="og:title" content="Java与JVM：（一）从OpenJDK看Javac">
 <meta property="og:url" content="http://yoursite.com/2017/12/17/interpreter-compiler/index.html">
 <meta property="og:site_name" content="Notebook">
-<meta property="og:description" content="对于java的学习，从知其然到知其所以然，JVM的学习是非常重要的一环。在这方面，给我帮助最大的是周志明老师的神书，以及莫枢大神（RednaxelaFX）的知乎回答以及文章，What can i do，高山仰止，拾人牙慧尔。 把解释器和编译器作为笔记的第一章，是觉得它们能从宏观的角度阐述一门语言的执行过程。而java在解释器和编译器技术上的历史变更，也是其版本发展迭代中的主要内容。如非特别声明，本">
+<meta property="og:description" content="对于java的学习，从知其然到知其所以然（然而现在还是菜鸟），JVM的学习是非常重要的一环。在这方面，给我帮助最大的是周志明老师的神书，以及莫枢大神（RednaxelaFX）的知乎回答以及文章，What can i do，高山仰止，拾人牙慧尔。 把解释器和编译器作为笔记的第一章，是觉得它们能从宏观的角度阐述一门语言的执行过程。而java在解释器和编译器技术上的历史变更，也是其版本发展迭代中的主要内">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://yoursite.com/2017/12/17/interpreter-compiler/javacompile.jpg">
 <meta property="og:image" content="http://yoursite.com/2017/12/17/interpreter-compiler/javaccompile.jpg">
-<meta property="og:updated_time" content="2017-12-31T15:30:34.791Z">
+<meta property="og:updated_time" content="2018-02-20T14:58:50.567Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="初探JVM：（一）从OpenJDK看Javac">
-<meta name="twitter:description" content="对于java的学习，从知其然到知其所以然，JVM的学习是非常重要的一环。在这方面，给我帮助最大的是周志明老师的神书，以及莫枢大神（RednaxelaFX）的知乎回答以及文章，What can i do，高山仰止，拾人牙慧尔。 把解释器和编译器作为笔记的第一章，是觉得它们能从宏观的角度阐述一门语言的执行过程。而java在解释器和编译器技术上的历史变更，也是其版本发展迭代中的主要内容。如非特别声明，本">
+<meta name="twitter:title" content="Java与JVM：（一）从OpenJDK看Javac">
+<meta name="twitter:description" content="对于java的学习，从知其然到知其所以然（然而现在还是菜鸟），JVM的学习是非常重要的一环。在这方面，给我帮助最大的是周志明老师的神书，以及莫枢大神（RednaxelaFX）的知乎回答以及文章，What can i do，高山仰止，拾人牙慧尔。 把解释器和编译器作为笔记的第一章，是觉得它们能从宏观的角度阐述一门语言的执行过程。而java在解释器和编译器技术上的历史变更，也是其版本发展迭代中的主要内">
 <meta name="twitter:image" content="http://yoursite.com/2017/12/17/interpreter-compiler/javacompile.jpg">
 
 
@@ -128,7 +128,7 @@
 
 
 
-  <title>初探JVM：（一）从OpenJDK看Javac | Notebook</title>
+  <title>Java与JVM：（一）从OpenJDK看Javac | Notebook</title>
   
 
 
@@ -273,7 +273,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">初探JVM：（一）从OpenJDK看Javac</h1>
+          <h1 class="post-title" itemprop="name headline">Java与JVM：（一）从OpenJDK看Javac</h1>
         
 
         <div class="post-meta">
@@ -308,8 +308,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JVM</span>
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
                   </a>
                 </span>
 
@@ -345,7 +345,7 @@
       
 
       
-        <p>对于java的学习，从知其然到知其所以然，JVM的学习是非常重要的一环。在这方面，给我帮助最大的是周志明老师的神书，以及莫枢大神（RednaxelaFX）的知乎回答以及文章，What can i do，高山仰止，拾人牙慧尔。</p>
+        <p>对于java的学习，从知其然到知其所以然（然而现在还是菜鸟），JVM的学习是非常重要的一环。在这方面，给我帮助最大的是周志明老师的神书，以及莫枢大神（RednaxelaFX）的知乎回答以及文章，What can i do，高山仰止，拾人牙慧尔。</p>
 <p>把解释器和编译器作为笔记的第一章，是觉得它们能从宏观的角度阐述一门语言的执行过程。而java在解释器和编译器技术上的历史变更，也是其版本发展迭代中的主要内容。如非特别声明，本文中的JVM指HotSpot VM。</p>
 <p>从宏观上讲，java的执行过程（不考虑AOT）通常可以分为从*.java到*.class（字节码）的过程和从字节码到机器码的过程。前者通常采用javac编译器进行编译，后者则采用解释执行与编译执行(C1，C2)相搭配的方式，如下图所示，由于JIT编译器的分析挺复杂，因此本文重点对javac编译器进行描述。<br><img src="/2017/12/17/interpreter-compiler/javacompile.jpg" alt="java执行过程"></p>
 <h2 id="javac编译器"><a href="#javac编译器" class="headerlink" title="javac编译器"></a>javac编译器</h2><p>严格意义上来讲，javac编译器并不属于JVM的内容，javac依赖于java语言，而JVM则仅依赖于字节码文件。通过OpenJDK，我们可以看到它的具体实现。javac编译器将java程序编译为平台及语言独立的字节码，而其他jvm族的语言也有它们的“javac”，如scalac、groovyc等。javac的主要工作包括解析填充符号表、处理注解以及分析并生成字节码，如下图所示。<br><img src="/2017/12/17/interpreter-compiler/javaccompile.jpg" alt="javac编译过程"></p>

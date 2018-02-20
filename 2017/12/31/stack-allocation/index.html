@@ -82,14 +82,14 @@
 <meta name="description" content="背景传统概念中Java的对象均保存在堆中，被所有线程共享，由垃圾回收机制对其进行回收。这样做的优点在于可以对所有对象进行统一而清晰的管理，缺点在于增加了垃圾回收器的压力。由于大量的对象均只存在于某一方法或某一线程中，因为如果将它们和本地基本变量一样随着栈帧出栈而销毁，垃圾回收器就可以省心不少。 逃逸分析书接上文，如果能">
 <meta name="keywords" content="JIT优化">
 <meta property="og:type" content="article">
-<meta property="og:title" content="初探JVM：（二）从逃逸分析到栈上分配">
+<meta property="og:title" content="Java与JVM：（二）从逃逸分析到栈上分配">
 <meta property="og:url" content="http://yoursite.com/2017/12/31/stack-allocation/index.html">
 <meta property="og:site_name" content="Notebook">
 <meta property="og:description" content="背景传统概念中Java的对象均保存在堆中，被所有线程共享，由垃圾回收机制对其进行回收。这样做的优点在于可以对所有对象进行统一而清晰的管理，缺点在于增加了垃圾回收器的压力。由于大量的对象均只存在于某一方法或某一线程中，因为如果将它们和本地基本变量一样随着栈帧出栈而销毁，垃圾回收器就可以省心不少。 逃逸分析书接上文，如果能确定对象仅存在于某方法或某线程中，就可以进行优化，所以关键的一步在于判断某对象是">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-01-06T10:20:33.274Z">
+<meta property="og:updated_time" content="2018-02-20T14:51:56.894Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="初探JVM：（二）从逃逸分析到栈上分配">
+<meta name="twitter:title" content="Java与JVM：（二）从逃逸分析到栈上分配">
 <meta name="twitter:description" content="背景传统概念中Java的对象均保存在堆中，被所有线程共享，由垃圾回收机制对其进行回收。这样做的优点在于可以对所有对象进行统一而清晰的管理，缺点在于增加了垃圾回收器的压力。由于大量的对象均只存在于某一方法或某一线程中，因为如果将它们和本地基本变量一样随着栈帧出栈而销毁，垃圾回收器就可以省心不少。 逃逸分析书接上文，如果能确定对象仅存在于某方法或某线程中，就可以进行优化，所以关键的一步在于判断某对象是">
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <title>初探JVM：（二）从逃逸分析到栈上分配 | Notebook</title>
+  <title>Java与JVM：（二）从逃逸分析到栈上分配 | Notebook</title>
   
 
 
@@ -271,7 +271,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">初探JVM：（二）从逃逸分析到栈上分配</h1>
+          <h1 class="post-title" itemprop="name headline">Java与JVM：（二）从逃逸分析到栈上分配</h1>
         
 
         <div class="post-meta">
@@ -306,8 +306,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JVM</span>
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
                   </a>
                 </span>
 
@@ -401,8 +401,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/01/06/call-by-ref/" rel="prev" title="初探JVM：（三）关于引用传递的文字游戏——从一道题目想到">
-                初探JVM：（三）关于引用传递的文字游戏——从一道题目想到 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/01/06/call-by-ref/" rel="prev" title="Java与JVM：（三）关于引用传递的文字游戏——从一道题目想到">
+                Java与JVM：（三）关于引用传递的文字游戏——从一道题目想到 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
