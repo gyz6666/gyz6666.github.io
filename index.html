@@ -250,6 +250,153 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/20/CAS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="gyz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/02/20/CAS/" itemprop="url">Java与JVM：（四）并发的基石——CAS操作</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-20T23:11:33+08:00">
+                2018-02-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>Synchronized是众所周知的锁策略，而Synchronized是一种悲观锁策略，在吞吐量上可能会有局限性（特别是早期的Synchronized，JDK1.6的偏向锁和轻量级锁为Synchronized带来了巨大的改进，这些更新同样依赖于CAS）。乐观锁则一般利用CAS来实现，在Java中位于java.util.concurrent包中，CAS可以说是撑起了一个concurrent包，足见其重要性。</p>
+<p>CAS的全称概括了它的过程——Compare And Swap，整个操作主要包括三个值：当前内存某位置的值V，对V的预期值A，对V的欲更新值B。整个过程可以概括为“我认为V的值应该是A，如果V的确是A，就将V更新为B；但如果预期错误，V不为A，则不更新V，无论如何，结束后将V的旧值返回给我”。就是这么简单的逻辑，构筑了并发包的基础。</p>
+<h2 id="硬件支持"><a href="#硬件支持" class="headerlink" title="硬件支持"></a>硬件支持</h2><p>CAS之所以如此有效是因为它是一个原子操作，现在的CPU架构均支持CAS原子操作，在x86中，这个CPU指令是cmpxchg指令，这可以在阅读JNI调用的C++源码中看到（Atomic::cmpxchg）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">UNSAFE_ENTRY(jboolean, Unsafe_CompareAndSwapInt(JNIEnv *env, jobject unsafe, jobject obj, jlong offset, jint e, jint x))</span><br><span class="line">  UnsafeWrapper(&quot;Unsafe_CompareAndSwapInt&quot;);</span><br><span class="line">  oop p = JNIHandles::resolve(obj);</span><br><span class="line">  jint* addr = (jint *) index_oop_from_field_offset_long(p, offset);</span><br><span class="line">  return (jint)(Atomic::cmpxchg(x, addr, e)) == e;</span><br><span class="line">UNSAFE_END</span><br></pre></td></tr></table></figure></p>
+<p>有了硬件支持，CAS操作就可以大施拳脚了。</p>
+<h2 id="CAS介绍"><a href="#CAS介绍" class="headerlink" title="CAS介绍"></a>CAS介绍</h2><h3 id="一个经典问题"><a href="#一个经典问题" class="headerlink" title="一个经典问题"></a>一个经典问题</h3><p>在java中，在分析volative属性以及原子性的时候，一个经典的问题就是Java中int型变量的自增问题。<br>```<br>public class Boo{</p>
+<p>}</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/17/kafka实践/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1048,193 +1195,6 @@
 <p>核心：<strong>当已经找到答案时，提前结束搜索。</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public boolean combinationSum(int[] candidates, int target)&#123;</span><br><span class="line">    if (candidates == null || candidates.length == 0)</span><br><span class="line">        return res;</span><br><span class="line">    backTracking(0, target, candidates, new ArrayList&lt;Integer&gt;());</span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void backTracking(int curIndex, int curRemains, int[] a,List&lt;Integer&gt; curList)&#123;</span><br><span class="line">    if (curRemains &lt; 0)</span><br><span class="line">        return;</span><br><span class="line">    if (curRemains == 0)&#123;</span><br><span class="line">        res = true;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    for (int i = curIndex; i &lt; a.length; i++)&#123;</span><br><span class="line">        curList.add(a[i]);</span><br><span class="line">        backTracking(i, curRemains - a[i], a, curList);</span><br><span class="line">        curList.remove(curList.size() - 1);</span><br><span class="line">        // 当已经找到答案时，直接返回</span><br><span class="line">        if (res)</span><br><span class="line">            return;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h2 id="经典应用"><a href="#经典应用" class="headerlink" title="经典应用"></a>经典应用</h2><h3 id="N皇后问题（leetcode-51）"><a href="#N皇后问题（leetcode-51）" class="headerlink" title="N皇后问题（leetcode 51）"></a>N皇后问题（leetcode 51）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">The n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other.</span><br><span class="line"></span><br><span class="line">Given an integer n, return all distinct solutions to the n-queens puzzle.</span><br><span class="line"></span><br><span class="line">Each solution contains a distinct board configuration of the n-queens&apos; placement, where &apos;Q&apos; and &apos;.&apos; both indicate a queen and an empty space respectively.</span><br></pre></td></tr></table></figure>
 <p><img src="/2018/01/08/backtrack/8-queens.png" alt="8-queens"><br>核心：<strong>经典的回溯，注意如何简洁的进行检查</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;List&lt;String&gt;&gt; solveNQueens(int n) &#123;</span><br><span class="line">    List&lt;List&lt;String&gt;&gt; res = new ArrayList&lt;List&lt;String&gt;&gt;();</span><br><span class="line">    if(n &lt;= 0)</span><br><span class="line">        return res;</span><br><span class="line">    backTracking(n, 0, new ArrayList&lt;Integer&gt;(), new ArrayList&lt;String&gt;(), res);</span><br><span class="line">    return res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void backTracking(int n, int col, List&lt;Integer&gt; curRows, List&lt;String&gt; curRes, List&lt;List&lt;String&gt;&gt; res)&#123;</span><br><span class="line">    if(col == n)&#123;</span><br><span class="line">        res.add(new ArrayList&lt;&gt;(curRes));</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    for(int i = 0; i &lt; n; i++)&#123;</span><br><span class="line">        if(!check(col, i, curRows))</span><br><span class="line">            continue;</span><br><span class="line">        // 这里我单独保存一个列信息list以便更快的检查</span><br><span class="line">        curRows.add(i);</span><br><span class="line">        addStr(n, i, curRes);</span><br><span class="line">        backTracking(n, col + 1, curRows, curRes, res);</span><br><span class="line">        curRes.remove(curRes.size() -1);</span><br><span class="line">        curRows.remove(curRows.size() -1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 根据题目要求补全每行的内容</span><br><span class="line">public void addStr(int n, int row, List&lt;String&gt; res)&#123;</span><br><span class="line">    StringBuilder sb = new StringBuilder();</span><br><span class="line">    for(int i = 0; i &lt; n; i++)&#123;</span><br><span class="line">        if(i == row)&#123;</span><br><span class="line">            sb.append(&quot;Q&quot;);</span><br><span class="line">            continue;</span><br><span class="line">        &#125;</span><br><span class="line">        sb.append(&quot;.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    res.add(sb.toString());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 检查时仅需当前每步的列信息即可</span><br><span class="line">public boolean check(int col, int row, List&lt;Integer&gt; rows)&#123;</span><br><span class="line">    for(int i = 0; i &lt; rows.size(); i++)&#123;</span><br><span class="line">        // 后面两步对两种对角线关系进行判断</span><br><span class="line">        if(row == rows.get(i) || col -row == i - rows.get(i) || col + row == i + rows.get(i))&#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/07/CAS/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="gyz">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Notebook">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/07/CAS/" itemprop="url">Java与JVM：（四）并发的基石——CAS操作</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-07T18:11:33+08:00">
-                2018-01-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><table>
-<thead>
-<tr>
-<th>Field</th>
-<th style="text-align:center">Type</th>
-<th style="text-align:right">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>CAR_ID</td>
-<td style="text-align:center">string</td>
-<td style="text-align:right">taxi id</td>
-</tr>
-<tr>
-<td>TIME_STAMP</td>
-<td style="text-align:center">string</td>
-<td style="text-align:right">time stamp</td>
-</tr>
-<tr>
-<td>LONGITUDE</td>
-<td style="text-align:center">float</td>
-<td style="text-align:right">car longitude</td>
-</tr>
-<tr>
-<td>LATITUDE</td>
-<td style="text-align:center">float</td>
-<td style="text-align:right">car latitude</td>
-</tr>
-<tr>
-<td>DIRECTION</td>
-<td style="text-align:center">int</td>
-<td style="text-align:right">car direction</td>
-</tr>
-<tr>
-<td>SPEED</td>
-<td style="text-align:center">int</td>
-<td style="text-align:right">car speed</td>
-</tr>
-<tr>
-<td>PASSENGER_STATUS</td>
-<td style="text-align:center">string</td>
-<td style="text-align:right">Carrying passenger or not</td>
-</tr>
-</tbody>
-</table>
 
           
         
