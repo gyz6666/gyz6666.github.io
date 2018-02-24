@@ -250,6 +250,157 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/20/CDH集群运维——安装Kafka/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="gyz">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Notebook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/12/20/CDH集群运维——安装Kafka/" itemprop="url">CDH集群运维——安装Kafka</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-20T14:25:14+08:00">
+                2017-12-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ClouderaManager/" itemprop="url" rel="index">
+                    <span itemprop="name">CDH运维</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>做流计算，Kafka是非常重要的，</p>
+<p>负责在师门的CDH实验集群上安装Kafka。CDH本身的parcel是不带Kafka的，需要自己下载parcel，配置后Cloudera Manager中可以直接安装，总体上还是比较方便的。</p>
+<p>主要的步骤为——下载csd和parcel——部署csd和parcel——在CDM中检查、分配及激活parcel——在CDM中添加Kafka服务。</p>
+<h3 id="下载csd和parcel"><a href="#下载csd和parcel" class="headerlink" title="下载csd和parcel"></a>下载csd和parcel</h3><p>需要根据CDH的版本来选择对应的cdh-kafka版本，对应的网址见<a href="https://www.cloudera.com/documentation/enterprise/release-notes/topics/rn_consolidated_pcm.html#pcm_kafka" target="_blank" rel="noopener">cdh-kafka版本对应</a>。由于我们的集群比较老，是CDH 5.8版本，因此需要下载的是cdh-Kafka2.0.x。<img src="/2017/12/20/CDH集群运维——安装Kafka/1.png" alt="cdh-kafka版本对应"><br>在<a href="http://archive.cloudera.com/csds/kafka/" target="_blank" rel="noopener">csd下载地址</a>中下载jar包，在<a href="http://archive.cloudera.com/kafka/parcels/" target="_blank" rel="noopener">parcel下载地址</a>中根据操作下载。parcel、parcel.sha1和mainfest这三个文件，将sha1后缀重命名为sha，并检查其与mainfest中的hashcode是否一致。<img src="/2017/12/20/CDH集群运维——安装Kafka/2.png" alt="下载parcel等文件"></p>
+<h3 id="部署csd和parcel"><a href="#部署csd和parcel" class="headerlink" title="部署csd和parcel"></a>部署csd和parcel</h3><p>然后在CDM的安装节点（不需要在其它节点）上部署这些文件，其中csd文件部署在/opt/cloudera/csd 下。<br><br><br><img src="/2017/12/20/CDH集群运维——安装Kafka/5.png" alt="csd部署"><br>将parcel等文件部署在/opt/cloudera/parcel-repo下，注意之前的mainfest要进行重命名。<br><br><br><img src="/2017/12/20/CDH集群运维——安装Kafka/6.png" alt="parcel部署"></p>
+<h3 id="检查、分配及激活parcel"><a href="#检查、分配及激活parcel" class="headerlink" title="检查、分配及激活parcel"></a>检查、分配及激活parcel</h3><p>在Cloudera Manager中点击主机——parcel——检查新parcel可以发现部署的kafka，点击分配——激活使其可用，点击详情可以看到具体的过程。<br><br><br><img src="/2017/12/20/CDH集群运维——安装Kafka/3.jpg" alt="激活parcel"><img src="/2017/12/20/CDH集群运维——安装Kafka/4.png" alt="详情"></p>
+<h3 id="添加parcel服务"><a href="#添加parcel服务" class="headerlink" title="添加parcel服务"></a>添加parcel服务</h3><p>在Cloudera Manager选择添加服务——kafka——按步骤安装，即可完成Kafka服务的安装。</p>
+<h3 id="报错及解决"><a href="#报错及解决" class="headerlink" title="报错及解决"></a>报错及解决</h3><ul>
+<li>在启动kafka服务的时候，会报错提示启动失败，报OOM错误。错误原因：broker默认的内存仅50M太小。解决方法：将broker的内存设置为1G或以上，即可开启Kafka服务。<br><br><br><img src="/2017/12/20/CDH集群运维——安装Kafka/7.png" alt="增加内存分配"><br>CDM显示服务启动成功<img src="/2017/12/20/CDH集群运维——安装Kafka/8.png" alt="Kafka启动成功">。</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/17/interpreter-compiler/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -450,7 +601,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
