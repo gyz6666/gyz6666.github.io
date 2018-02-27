@@ -292,6 +292,28 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据结构与算法/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -321,7 +343,30 @@
       
         
           
-            
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>一致性hash是一种简洁而有效的方法，它的应用范围广泛，特别是在各种分布式场景下。它在1997年被提出，解决了简单的余数哈希方法在分布式场景下的不足。在分布式缓存数据库memcached等产品中我们可以看到它的身影。</p>
+<h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><h3 id="余数hash的局限"><a href="#余数hash的局限" class="headerlink" title="余数hash的局限"></a>余数hash的局限</h3><p>一致性hash之所以被提出，是因为余数hash方法在分布式环境中存在局限性，因此我们首先来看看这种局限性体现在哪。</p>
+<p>以分布式缓存作为应用场景来介绍，我们知道缓存数据存放位置是根据服务器的某关键字（如节点名称）的哈希值与数据的某关键字（如字符前缀）的哈希值进行匹配来确定的。</p>
+<p>这种方法简单高效，看似没有问题，但是当我们的服务器集群中要添加服务器或删除服务器时，问题就显现了，缓存会出现大面积的无法命中的情况。例如，当我们将服务器的数量从3台增加到4台时，会出现大量的匹配错误情况，如下图所示。</p>
+<p><img src="/2018/02/24/consistent-hashing/1_2.jpg" alt="余数hash局限"></p>
+<h3 id="一致性hash"><a href="#一致性hash" class="headerlink" title="一致性hash"></a>一致性hash</h3><p>一致性hash算法采用环的方法来解决问题，余数哈希存在问题的主要原因是当服务器节点发生变化时，除数会发生变化，所有数据都会发生影响。而一致性hash算法中，除数是固定的，改变的只是环中的服务器数量。</p>
+<p>该环一般被设置为2的32次方长度（与int长度一样），服务器节点根据其关键字的hash值确定其在环上的位置，查询的时候，计算出数据在环上的位置，根据顺时针找到离它最近的服务器节点，在该服务器上存储和寻找对应的数据，如图所示。</p>
+<p><img src="/2018/02/24/consistent-hashing/2_3.jpg" alt="一致性hash"><br>当服务器增加节点（Node4后），只有Data4的判断出了错误，即只有Node2-Node3这段的缓存会出现无法命中的情况，大大缩小了错误的范围。<br><img src="/2018/02/24/consistent-hashing/3.jpg" alt="增加节点后"></p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="重计算hash值"><a href="#重计算hash值" class="headerlink" title="重计算hash值"></a>重计算hash值</h3><p>在之前的描述中，我们可以知道，服务器节点和数据在换上的位置是根据hash值 % 环长（2的32次方）来确定的。然而，在实际实现中，我们发现，在Java中，如果直接用hashcode方法来获取hash值，容易出现hash值无法均匀分布（如直接按IP取hash），以及hash值为负的现象。</p>
+<p>192.168.0.0 ===&gt; 55965011<br>192.168.0.1 ===&gt; 55965012<br>192.168.0.2 ===&gt; 55965013<br>192.168.0.3 ===&gt; 55965014</p>
+<p>出现这个现象的原因是Java重写了String的hashcode方法，而我们在给服务器命名的时候总是会定义类似的名字（如Slave1，Slave2）因此很容易导致hash值分布不均匀。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public int hashCode() &#123;</span><br><span class="line">    int h = hash;</span><br><span class="line">    if (h == 0 &amp;&amp; value.length &gt; 0) &#123;</span><br><span class="line">        char val[] = value;</span><br><span class="line"></span><br><span class="line">        for (int i = 0; i &lt; value.length; i++) &#123;</span><br><span class="line">            h = 31 * h + val[i];</span><br><span class="line">        &#125;</span><br><span class="line">        hash = h;</span><br><span class="line">    &#125;</span><br><span class="line">    return h;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因此有必要重新计算hash值，一般的方法有CRC32_HASH，KETAMA_HASH等，CRC32方法在java.util.zip.CRC32中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String a = &quot;192.168.0.0&quot;;</span><br><span class="line">CRC32 crc = new CRC32();</span><br><span class="line">crc.update(a.getBytes());</span><br><span class="line">crc.getValue();</span><br></pre></td></tr></table></figure></p>
+<p>使用该方法后，hash值分散效果较好。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">192.168.0.0 ===&gt; 4269844990</span><br><span class="line">192.168.0.1 ===&gt; 2307365224</span><br><span class="line">192.168.0.2 ===&gt; 277792978</span><br><span class="line">192.168.0.3 ===&gt; 1737095236</span><br></pre></td></tr></table></figure></p>
+<h3 id="实现hash环及查找"><a href="#实现hash环及查找" class="headerlink" title="实现hash环及查找"></a>实现hash环及查找</h3><p>可以用多种数据结构实现hash环，如List、BST等。考虑到数据查询性能，一般采用BST（二叉查找树）来实现，再考虑到树的平衡性，采用平衡二叉查找树优于普通的二叉查找数，最通用的平衡查找数就是大家最熟悉的红黑树了。</p>
+<p>而在Java中，我们不需要自己实现红黑树，使用java.util.TreeMap即可，由于它实现了java.util.SortedMap接口，因此我们可以更方便的进行查找。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// Key：服务器hash值</span><br><span class="line">// Value：服务器名称</span><br><span class="line">SortedMap&lt;Integer, String&gt; serverMap = new TreeMap&lt;Integer, String&gt;();</span><br></pre></td></tr></table></figure></p>
+<p>在查找数据时，所谓“按顺时针方向找到离数据最近的节点”，其实就是找到“hash值大于数据的hash值的节点中，值最小的节点”。<br>在sortedMap中，tailMap(hash)方法可以得到所有key值大于该hash值的所有map；而firstKey()方法可以返回这些map中key最小的那个，这不就是我们要的么。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 找到hash值大于数据hash值的所有map</span><br><span class="line">SortedMap&lt;Integer, String&gt; suitMap = serverMap.tailMap(hash);</span><br><span class="line">// 找到这些节点中hash值最小的节点</span><br><span class="line">// 即为顺时针方向最近的节点</span><br><span class="line">String serverName = suitMap.get(suitMap.firstKey());</span><br></pre></td></tr></table></figure></p>
+<h2 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h2><p>一致性hash缓解了因服务器节点增减而导致的缓存大规模无法命中的问题，但是普通的一致性hash方法容易引入节点不平衡的问题，这又是为啥呢？</p>
+<p>从之前的图中我们可以看到，在加入了节点4后，原本属于节点1的数据将会部分被分配至节点4中，但是节点2，3并不受影响，因此节点1（1个数据），2（2个数据），3（2个数据）上存储的缓存数据量不同，这便引起了数据不平衡的问题。</p>
+<p>如何解决该问题呢，可以采用虚拟节点的方式，即每个真实节点在环中的不同位置保存若干个虚拟节点，如下图中为3个虚拟节点。当数据访问虚拟节点时会再次映射到真实的节点。</p>
+<p>这样当新增加节点时，新增带来的影响会分配到各个节点上，不会只影响一个节点，从而解决了数据不平衡的问题。<br><img src="/2018/02/24/consistent-hashing/4.jpg" alt="虚拟节点"></p>
+<p>在《大型网站技术架构》（李智慧）书中，作者提到虚拟节点一般被设置为150个左右。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>一致性hash是一种并不复杂的方法，它胜在巧妙，很大程度上解决了简单的余数hash方法在分布式场景中的缺陷。除了在memcached中我们会潜移默化的用到它外，在一些分布式场景中，我们也可以自己实现一致性哈希来应对节点增删的情况。</p>
+
           
         
       
