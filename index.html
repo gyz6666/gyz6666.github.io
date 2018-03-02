@@ -594,7 +594,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/02/17/kafka实践/" itemprop="url">kafka实践</a></h1>
+                <a class="post-title-link" href="/2018/02/17/kafka实践/" itemprop="url">Kafka实践</a></h1>
         
 
         <div class="post-meta">
@@ -668,7 +668,29 @@
       
         
           
-            
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>对部署好后的Kafka做一些最基本的实践以及测试，对producer、broker、consumer、zookeeper等角色进行基本的实验。</p>
+<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>整个实践环境在CDH（5.8.0）集群环境下，zookeeper采用cdh自带的zookeeper（3.4.5），Kafka（0.8）</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="验证zookeeper状态"><a href="#验证zookeeper状态" class="headerlink" title="验证zookeeper状态"></a>验证zookeeper状态</h3><p>Kafka借助zookeeper来实现选举、负载均衡等HA特性，同时在整个过程中，zk还会提供一系列帮助，如为producer提供broker列表，缓存offset数据等等。所以我们先要确定集群中的zk是否正常工作。</p>
+<p>可以用两种方式来查询zk状态。第一种为常规模式（CDH已为脚本加入环境变量，不需直接调脚本）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># zookeeper-server status</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 结果</span><br><span class="line">JMX enabled by default</span><br><span class="line">Using config: /etc/zookeeper/conf/zoo.cfg</span><br><span class="line">Mode: standalone</span><br></pre></td></tr></table></figure>
+<p>或者用nc模式，配合zk的“四字母组合”模式。其中“ruok”（Are you OK）查询zk是否正常工作。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># echo ruok | nc Master 2181</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 结果</span><br><span class="line">imok</span><br></pre></td></tr></table></figure>
+<p>其他四字命令如下图（拍自《Hadoop权威指南》）<br><img src="/2018/02/17/kafka实践/zk命令.jpg" width="400" height="500"></p>
+<h3 id="创建topic"><a href="#创建topic" class="headerlink" title="创建topic"></a>创建topic</h3><p>生产者和消费者都要根据topic来push和pull数据，所以我们首先要创建topic。<br>参数说明：zookeeper参数需要指明zookeeper所在的服务器及端口，topic参数指明topic名字，partitions和replication-factor分别代表partition和副本的数量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># kafka-topics --zookeeper master:2181 --create --topic test --partitions 3 --replication-factor 2</span><br></pre></td></tr></table></figure></p>
+<h3 id="查询topic"><a href="#查询topic" class="headerlink" title="查询topic"></a>查询topic</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># kafka-topics --zookeeper master:2181 --list</span><br></pre></td></tr></table></figure>
+<p>结果中可以看到我们刚刚创建的topic（test）<br><img src="/2018/02/17/kafka实践/1.png" alt="查询topic"></p>
+<h3 id="produser生产数据"><a href="#produser生产数据" class="headerlink" title="produser生产数据"></a>produser生产数据</h3><p>选择一个节点，开启一个进程作为生产者进行生产。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># kafka-console-producer --broker-list master:9092 --topic test</span><br></pre></td></tr></table></figure></p>
+<p>按回车后，继续键入数据作为实际生产的数据。<br><img src="/2018/02/17/kafka实践/2.png" alt="生产数据"></p>
+<h3 id="consumer消费数据"><a href="#consumer消费数据" class="headerlink" title="consumer消费数据"></a>consumer消费数据</h3><p>选择集群中另一个节点来模拟消费者<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># kafka-console-producer --broker-list master:9092 --topic test</span><br></pre></td></tr></table></figure></p>
+<p>可以看到刚才生产者生产的数据<br><img src="/2018/02/17/kafka实践/3.png" alt="消费数据"></p>
+<h3 id="删除节点"><a href="#删除节点" class="headerlink" title="删除节点"></a>删除节点</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># kafka-topics --delete --zookeeper master:2181 --topic test</span><br></pre></td></tr></table></figure>
+<h3 id="一个小技巧"><a href="#一个小技巧" class="headerlink" title="一个小技巧"></a>一个小技巧</h3><p>Kafka主要是处理日志，那么有没有啥好方法可以来方便的处理呢？<strong>通过Linux管道指令与Kafka指令结合就可以。</strong></p>
+<p>首先，我们利用tail -f命令来源源不断的获取文件的更新，然后将这些更新作为输入直接输出到produce命令中即可。</p>
+<p>如我们可以监听hadoop日志的更新，生产者负责将更新内容输入到Kafka当中，这个过程不需要其他语言，直接用shell即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># tail -n 0 -f /var/log/hadoop-hdfs/hadoop-cmf-hdfs-NAMENODE-Master.log.out | kafka-console-producer --broker-list master:9092 --topic test</span><br></pre></td></tr></table></figure>
+<p>在消费者中，可以看到源源不断的日志更新信息。<br><img src="/2018/02/17/kafka实践/4.png" alt="日志"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>完成了一些关于Kafka的基本操作，以及介绍了对于文件（日志）处理的小技巧。</p>
+
           
         
       
@@ -1789,7 +1811,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

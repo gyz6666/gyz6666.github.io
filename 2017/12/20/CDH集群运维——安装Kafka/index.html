@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="做流计算，Kafka是非常重要的， 负责在师门的CDH实验集群上安装Kafka。CDH本身的parcel是不带Kafka的，需要自己下载parcel，配置后Cloudera Manager中可以直接安装，总体上还是比较方便的。 主要的步骤为——下载csd和parcel——部署csd和parcel——在CDM中检查、分配">
+<meta name="description" content="Kafka是非常重要的分布式消息订阅系统。相比于传统的MQ，它具有轻量级和高吞吐量等优点。 负责在师门的CDH实验集群上安装Kafka。CDH本身的parcel是不带Kafka的，需要自己下载parcel，配置后Cloudera Manager中可以直接安装，总体上还是比较方便的。 主要的步骤为——下载csd和parc">
 <meta name="keywords" content="Kafka">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CDH集群运维——安装Kafka">
 <meta property="og:url" content="http://yoursite.com/2017/12/20/CDH集群运维——安装Kafka/index.html">
 <meta property="og:site_name" content="Notebook">
-<meta property="og:description" content="做流计算，Kafka是非常重要的， 负责在师门的CDH实验集群上安装Kafka。CDH本身的parcel是不带Kafka的，需要自己下载parcel，配置后Cloudera Manager中可以直接安装，总体上还是比较方便的。 主要的步骤为——下载csd和parcel——部署csd和parcel——在CDM中检查、分配及激活parcel——在CDM中添加Kafka服务。 下载csd和parcel需">
+<meta property="og:description" content="Kafka是非常重要的分布式消息订阅系统。相比于传统的MQ，它具有轻量级和高吞吐量等优点。 负责在师门的CDH实验集群上安装Kafka。CDH本身的parcel是不带Kafka的，需要自己下载parcel，配置后Cloudera Manager中可以直接安装，总体上还是比较方便的。 主要的步骤为——下载csd和parcel——部署csd和parcel——在CDM中检查、分配及激活parcel——在">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://yoursite.com/2017/12/20/CDH集群运维——安装Kafka/1.png">
 <meta property="og:image" content="http://yoursite.com/2017/12/20/CDH集群运维——安装Kafka/2.png">
@@ -95,10 +95,10 @@
 <meta property="og:image" content="http://yoursite.com/2017/12/20/CDH集群运维——安装Kafka/4.png">
 <meta property="og:image" content="http://yoursite.com/2017/12/20/CDH集群运维——安装Kafka/7.png">
 <meta property="og:image" content="http://yoursite.com/2017/12/20/CDH集群运维——安装Kafka/8.png">
-<meta property="og:updated_time" content="2018-02-28T15:47:50.370Z">
+<meta property="og:updated_time" content="2018-03-01T14:47:43.339Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CDH集群运维——安装Kafka">
-<meta name="twitter:description" content="做流计算，Kafka是非常重要的， 负责在师门的CDH实验集群上安装Kafka。CDH本身的parcel是不带Kafka的，需要自己下载parcel，配置后Cloudera Manager中可以直接安装，总体上还是比较方便的。 主要的步骤为——下载csd和parcel——部署csd和parcel——在CDM中检查、分配及激活parcel——在CDM中添加Kafka服务。 下载csd和parcel需">
+<meta name="twitter:description" content="Kafka是非常重要的分布式消息订阅系统。相比于传统的MQ，它具有轻量级和高吞吐量等优点。 负责在师门的CDH实验集群上安装Kafka。CDH本身的parcel是不带Kafka的，需要自己下载parcel，配置后Cloudera Manager中可以直接安装，总体上还是比较方便的。 主要的步骤为——下载csd和parcel——部署csd和parcel——在CDM中检查、分配及激活parcel——在">
 <meta name="twitter:image" content="http://yoursite.com/2017/12/20/CDH集群运维——安装Kafka/1.png">
 
 
@@ -352,7 +352,7 @@
       
 
       
-        <p>做流计算，Kafka是非常重要的，</p>
+        <p>Kafka是非常重要的分布式消息订阅系统。相比于传统的MQ，它具有轻量级和高吞吐量等优点。</p>
 <p>负责在师门的CDH实验集群上安装Kafka。CDH本身的parcel是不带Kafka的，需要自己下载parcel，配置后Cloudera Manager中可以直接安装，总体上还是比较方便的。</p>
 <p>主要的步骤为——下载csd和parcel——部署csd和parcel——在CDM中检查、分配及激活parcel——在CDM中添加Kafka服务。</p>
 <h3 id="下载csd和parcel"><a href="#下载csd和parcel" class="headerlink" title="下载csd和parcel"></a>下载csd和parcel</h3><p>需要根据CDH的版本来选择对应的cdh-kafka版本，对应的网址见<a href="https://www.cloudera.com/documentation/enterprise/release-notes/topics/rn_consolidated_pcm.html#pcm_kafka" target="_blank" rel="noopener">cdh-kafka版本对应</a>。由于我们的集群比较老，是CDH 5.8版本，因此需要下载的是cdh-Kafka2.0.x。<img src="/2017/12/20/CDH集群运维——安装Kafka/1.png" alt="cdh-kafka版本对应"><br>在<a href="http://archive.cloudera.com/csds/kafka/" target="_blank" rel="noopener">csd下载地址</a>中下载jar包，在<a href="http://archive.cloudera.com/kafka/parcels/" target="_blank" rel="noopener">parcel下载地址</a>中根据操作下载。parcel、parcel.sha1和mainfest这三个文件，将sha1后缀重命名为sha，并检查其与mainfest中的hashcode是否一致。<img src="/2017/12/20/CDH集群运维——安装Kafka/2.png" alt="下载parcel等文件"></p>
@@ -503,7 +503,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
