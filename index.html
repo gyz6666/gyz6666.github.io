@@ -681,14 +681,14 @@
 <p>结果中可以看到我们刚刚创建的topic（test）<br><img src="/2018/02/17/kafka实践/1.png" alt="查询topic"></p>
 <h3 id="produser生产数据"><a href="#produser生产数据" class="headerlink" title="produser生产数据"></a>produser生产数据</h3><p>选择一个节点，开启一个进程作为生产者进行生产。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># kafka-console-producer --broker-list master:9092 --topic test</span><br></pre></td></tr></table></figure></p>
 <p>按回车后，继续键入数据作为实际生产的数据。<br><img src="/2018/02/17/kafka实践/2.png" alt="生产数据"></p>
-<h3 id="consumer消费数据"><a href="#consumer消费数据" class="headerlink" title="consumer消费数据"></a>consumer消费数据</h3><p>选择集群中另一个节点来模拟消费者<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># kafka-console-producer --broker-list master:9092 --topic test</span><br></pre></td></tr></table></figure></p>
+<h3 id="consumer消费数据"><a href="#consumer消费数据" class="headerlink" title="consumer消费数据"></a>consumer消费数据</h3><p>选择集群中另一个节点来模拟消费者<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># kafka-console-consumer --zookeeper Master:2181 --topic test --from-beginnin</span><br></pre></td></tr></table></figure></p>
 <p>可以看到刚才生产者生产的数据<br><img src="/2018/02/17/kafka实践/3.png" alt="消费数据"></p>
-<h3 id="删除节点"><a href="#删除节点" class="headerlink" title="删除节点"></a>删除节点</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># kafka-topics --delete --zookeeper master:2181 --topic test</span><br></pre></td></tr></table></figure>
+<h3 id="删除topic"><a href="#删除topic" class="headerlink" title="删除topic"></a>删除topic</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># kafka-topics --delete --zookeeper master:2181 --topic test</span><br></pre></td></tr></table></figure>
 <h3 id="一个小技巧"><a href="#一个小技巧" class="headerlink" title="一个小技巧"></a>一个小技巧</h3><p>Kafka主要是处理日志，那么有没有啥好方法可以来方便的处理呢？<strong>通过Linux管道指令与Kafka指令结合就可以。</strong></p>
 <p>首先，我们利用tail -f命令来源源不断的获取文件的更新，然后将这些更新作为输入直接输出到produce命令中即可。</p>
 <p>如我们可以监听hadoop日志的更新，生产者负责将更新内容输入到Kafka当中，这个过程不需要其他语言，直接用shell即可。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># tail -n 0 -f /var/log/hadoop-hdfs/hadoop-cmf-hdfs-NAMENODE-Master.log.out | kafka-console-producer --broker-list master:9092 --topic test</span><br></pre></td></tr></table></figure>
-<p>在消费者中，可以看到源源不断的日志更新信息。<br><img src="/2018/02/17/kafka实践/4.png" alt="日志"></p>
+<p>在消费者中，可以看到源源不断的日志更新信息。<br><img src="/2018/02/17/kafka实践/5.gif" alt="日志"></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>完成了一些关于Kafka的基本操作，以及介绍了对于文件（日志）处理的小技巧。</p>
 
           
