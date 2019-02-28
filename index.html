@@ -394,7 +394,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/05/01/aqs/" itemprop="url">Java与JVM：（五）并发的模版——AQS</a></h1>
+                <a class="post-title-link" href="/2018/05/01/aqs/" itemprop="url">Java与JVM：（五）并发的范式——AQS</a></h1>
         
 
         <div class="post-meta">
@@ -468,7 +468,15 @@
       
         
           
-            
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>JUC包中包括了各种基于乐观锁的并发工具，如可重入锁、读写锁、信号量等，这些并发工具存在一定的相似性，在某些场景下可以相互替换。JDK没有选择为每个并发工具独立开发其实现机制，而是在同一套模版上进行各自的实现，这套模版就是AQS。</p>
+<p>AQS的全称是AbstractQueuedSynchronizer，该抽象类位于JUC包的locks下，它将并发操作抽象出两个最主要的步骤——获取资源和释放资源，将资源抽象为两种——独占资源（Exclusive）和共享资源（Share）。主要包括4种主要方法：acquire（获取独占资源）、acquireShared（获取共享资源）以及release（释放独占资源）、releaseShared（释放共享资源）。下文将对具体的实现机制进行阐述。</p>
+<p>并发工具在实现时并不直接继承AQS，而是利用一个内部类来实现AQS，使用时操纵该内部类变量来实现线程安全。<br><img src="/2018/05/01/aqs/aqs_implemention.png" alt="AQS的使用类"></p>
+<h2 id="AQS的核心机制"><a href="#AQS的核心机制" class="headerlink" title="AQS的核心机制"></a>AQS的核心机制</h2><p>我们以acquire()方法为例来入手AQS。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public final void acquire(int arg) &#123;</span><br><span class="line">	// 首先尝试获取资源</span><br><span class="line">	// 如果获取成功，则直接返回</span><br><span class="line">	// 如果获取失败，则将当前线程加入阻塞队列</span><br><span class="line">	// 并产生一个中断</span><br><span class="line">    if (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>从这段代码可以看出，acquire主要包括两个过程——tryAquire()来尝试获取资源，acquireQueued()将当前线程加入阻塞队列排队。其中，tryAquire主要通过CAS操作state变量来实现。下面对这两个过程分别进行介绍。</p>
+<h3 id="state"><a href="#state" class="headerlink" title="state"></a>state</h3><p>首先要说明的是，由于不同的并发工具获取资源的方式存在差异，因此tryAquire()方法需要在各个工具中进行具体的实现，但是其实现原理均是操作state变量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">protected boolean tryAcquire(int arg) &#123;</span><br><span class="line">    throw new UnsupportedOperationException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>state是AQS类中定义的一个volative类型的变量。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * The synchronization state.</span><br><span class="line"> */</span><br><span class="line">private volatile int state;</span><br><span class="line"></span><br><span class="line">protected final boolean compareAndSetState(int expect, int update) &#123;</span><br><span class="line">    // See below for intrinsics setup to support this</span><br><span class="line">    return unsafe.compareAndSwapInt(this, stateOffset, expect, update);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>volative的作用这里不做赘述，通过对state变量进行各种原子性操作，来尝试获取资源及释放资源，并利用CAS操作来更新</p>
+<h3 id="阻塞队列"><a href="#阻塞队列" class="headerlink" title="阻塞队列"></a>阻塞队列</h3><h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2>
           
         
       
@@ -702,7 +710,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/02/20/CAS/" itemprop="url">Java与JVM：（四）JUC的基石——CAS操作</a></h1>
+                <a class="post-title-link" href="/2018/02/20/CAS/" itemprop="url">Java与JVM：（四）并发的基石——CAS操作</a></h1>
         
 
         <div class="post-meta">
@@ -1806,7 +1814,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
